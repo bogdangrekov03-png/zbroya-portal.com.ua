@@ -1,68 +1,52 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "../styles/home.css";
+
+const fallbackProducts = [
+  {
+    id: 1,
+    name: "Корпус автоключа VW 3кн",
+    price: 240,
+    image: "https://key-shop.net/image/cache/catalog/Volkswagen7_1-800x800.jpg",
+    brand: "Volkswagen"
+  },
+  {
+    id: 2,
+    name: "Автоключ Kia Sportage",
+    price: 320,
+    image: "https://key-shop.net/image/cache/data/key/mKXlcw0sAJA-800x800.jpg",
+    brand: "KIA"
+  },
+];
 
 export default function Home() {
   const [products, setProducts] = useState([]);
 
-  const load = async () => {
-    const res = await axios.get("/api/products");
-    setProducts(res.data);
-  };
-
   useEffect(() => {
-    load();
+    axios.get("/api/products")
+      .then(res => setProducts(res.data))
+      .catch(() => {
+        console.log("Бекенд недоступний — використовую fallback дані");
+        setProducts(fallbackProducts);
+      });
   }, []);
 
   return (
-    <div className="app">
-      <header className="header">
-        <div className="container header-inner">
-          <div className="logo">
-            KEY<span>SHOP</span>
-          </div>
-          <nav className="nav">
-            <a href="#" className="nav-link">Корпуси</a>
-            <a href="#" className="nav-link">Смарт-ключі</a>
-            <a href="#" className="nav-link">Чіпи</a>
-            <a href="#" className="nav-link">Пульти</a>
-          </nav>
-        </div>
-      </header>
+    <div className="home">
+      <h1>KEY-SHOP 2025</h1>
 
-      <section className="hero">
-        <div className="container hero-inner">
-          <div className="hero-content">
-            <div className="hero-badge">Магазин автоключів</div>
-            <h1>KEY-SHOP 2025</h1>
-            <p>
-              Корпуси, автоключі, смарт-ключі, чіпи, жала та пульти.
-              Професійний підбір для авто, преміальний дизайн сайту.
-            </p>
-          </div>
-          <div className="hero-side">
-            <div className="hero-card">
-              <p>Спеціальні ціни для СТО та майстрів</p>
-              <span>Доступ до оптового кабінету за запитом</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <h2>Товари</h2>
 
-      <section className="products">
-        <div className="container">
-          <h2>Товари</h2>
-          <div className="grid">
-            {products.map((p) => (
-              <a key={p._id} href={`/product/${p._id}`} className="card">
-                {p.image && <img src={p.image} alt={p.name} />}
-                <h3>{p.name}</h3>
-                <p className="brand">{p.brand} • {p.category}</p>
-                <p className="price">{p.price} ₴</p>
-              </a>
-            ))}
+      <div className="product-grid">
+        {products.map(p => (
+          <div key={p.id} className="product-card">
+            <img src={p.image} alt={p.name} />
+            <h3>{p.name}</h3>
+            <p>{p.brand}</p>
+            <span>{p.price} грн</span>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
     </div>
   );
 }

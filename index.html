@@ -281,151 +281,57 @@
     }
 
     /* ===== КАРТКИ ЗАСОБІВ ===== */
-    .cards-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 18px;
-    }
+/* Картка стає компактною */
+.weapon-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 39, 39, 0.6);
+    box-shadow: 0 0 18px rgba(255, 39, 39, 0.5);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;           /* важливо для кліка */
+    transition: 0.2s;
+}
 
-    .weapon-card {
-        background: var(--bg-card);
-        border-radius: 14px;
-        border: 1px solid rgba(255, 39, 39, 0.6);
-        box-shadow: 0 0 18px rgba(255, 39, 39, 0.5);
-        overflow: hidden;
-        position: relative;
-    }
+.weapon-card:hover {
+    box-shadow: 0 0 24px rgba(255, 39, 39, 0.9);
+    transform: translateY(-3px);
+}
 
-    .weapon-card::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(255,0,0,0.08), transparent 40%);
-        mix-blend-mode: screen;
-        pointer-events: none;
-    }
-
-   .weapon-image {
+/* Фото — квадратне, маленьке */
+.weapon-image {
     width: 100%;
-    aspect-ratio: 1 / 1;  /* квадрат */
+    aspect-ratio: 1 / 1;
     object-fit: cover;
-    filter: contrast(1.2) brightness(.85);
+    filter: contrast(1.2) brightness(.9);
     border-bottom: 1px solid rgba(255, 39, 39, 0.3);
     display: block;
 }
 
-    .weapon-body {
-        padding: 14px 14px 12px;
-    }
+/* Тіло карти — тільки ім’я */
+.weapon-body {
+    padding: 8px 10px;
+}
 
-    .weapon-header {
-        display: flex;
-        justify-content: space-between;
-        gap: 8px;
-        margin-bottom: 4px;
-    }
+/* Рядок з назвою */
+.weapon-header {
+    display: block;
+    text-align: center;
+}
 
-    .weapon-name {
-        font-size: 15px;
-        font-weight: 600;
-    }
+/* Назва */
+.weapon-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ff5757;
+}
 
-    .weapon-tag {
-        font-size: 10px;
-        text-transform: uppercase;
-        padding: 3px 7px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 39, 39, 0.8);
-        color: var(--accent-soft);
-    }
-
-    .weapon-meta {
-        font-size: 11px;
-        color: var(--text-muted);
-        margin-bottom: 6px;
-    }
-
-    .weapon-meta span {
-        margin-right: 10px;
-    }
-
-    .weapon-desc {
-        font-size: 13px;
-        color: #dddddd;
-        line-height: 1.5;
-    }
-
-    @media (min-width: 700px) {
-        .cards-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-
-    /* ===== ЩОДЕННІ ОНОВЛЕННЯ (ТВОЇ ФОТО) ===== */
-    .daily-note {
-        font-size: 12px;
-        color: var(--text-muted);
-        margin-bottom: 10px;
-    }
-
-    .daily-entry {
-        background: radial-gradient(circle at top, #220000 0%, #050506 40%, #000000 100%);
-        border-radius: 14px;
-        border: 1px dashed rgba(255,39,39,0.7);
-        padding: 14px;
-        margin-bottom: 12px;
-        box-shadow: 0 0 16px rgba(255,39,39,0.45);
-    }
-
-    .daily-entry h4 {
-        font-size: 14px;
-        margin-bottom: 4px;
-        color: var(--accent-soft);
-    }
-
-    .daily-entry time {
-        font-size: 11px;
-        color: var(--text-muted);
-    }
-
-    .daily-body {
-        margin-top: 8px;
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-    }
-
-    .daily-body img {
-        width: 96px;
-        height: 72px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 1px solid rgba(255,39,39,0.7);
-    }
-
-    .daily-text {
-        font-size: 13px;
-        line-height: 1.5;
-        color: #e0e0e0;
-    }
-
-    @media (max-width: 420px) {
-        .daily-body {
-            flex-direction: column;
-        }
-        .daily-body img {
-            width: 100%;
-            height: 160px;
-        }
-    }
-
-    footer {
-        padding: 26px 18px 34px;
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 11px;
-    }
- 
+/* Тег, дальність, опис — ховаємо на самій картці */
+.weapon-tag,
+.weapon-meta,
+.weapon-desc {
+    display: none;
+}
 /* ===== стиль ссилки ===== */
     footer a {
     color: var(--accent-soft);
@@ -545,10 +451,91 @@ mark {
     padding: 0 2px;
     border-radius: 4px;
 }
+/* ===== МОДАЛЬНЕ ВІКНО ===== */
+.weapon-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9990;
+    transition: 0.25s;
+}
+
+.weapon-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.weapon-modal-content {
+    background: #0b0b0f;
+    border-radius: 16px;
+    border: 1px solid rgba(255,39,39,0.7);
+    box-shadow: 0 0 25px rgba(255,0,0,0.7);
+    width: 90%;
+    max-width: 480px;
+    padding: 20px;
+    position: relative;
+    animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+.modal-close {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    background: transparent;
+    border: none;
+    color: #ff5757;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.modal-img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255,39,39,0.4);
+}
+
+.weapon-modal h2 {
+    margin-bottom: 6px;
+    font-size: 20px;
+    color: #ff5757;
+}
+
+.modal-range {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #bbbbbb;
+}
+
+.modal-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #e5e5e5;
+}
 
 
 </style>
 </head>
+ <!-- ===== МОДАЛЬНЕ ВІКНО ЗАСОБУ УРАЖЕННЯ ===== -->
+<div id="weaponModal" class="weapon-modal hidden">
+    <div class="weapon-modal-content">
+        <button class="modal-close">✖</button>
+        <img id="modalImg" class="modal-img" alt="">
+        <h2 id="modalName"></h2>
+        <p id="modalRange" class="modal-range"></p>
+        <p id="modalDesc" class="modal-desc"></p>
+    </div>
+</div>
+   
 <body>
 
 <!-- HUD НАВІГАЦІЯ -->
@@ -800,12 +787,14 @@ function renderWeapons(list) {
     list.forEach(item => {
         if (!sectors[item.type]) return;
 
-        const html = `
-        <article class="weapon-card">
+        const wrapper = document.createElement("article");
+        wrapper.className = "weapon-card";
+
+        wrapper.innerHTML = `
             <img class="weapon-image" src="${item.img || ""}">
             <div class="weapon-body">
                 <div class="weapon-header">
-                    <div class="weapon-name">${item.name}</div>
+                    <div class="weapon-name">${item.name || ""}</div>
                     <div class="weapon-tag">${item.tag || ""}</div>
                 </div>
                 <div class="weapon-meta">
@@ -813,14 +802,20 @@ function renderWeapons(list) {
                 </div>
                 <div class="weapon-desc">${item.desc || ""}</div>
             </div>
-        </article>`;
+        `;
 
-        sectors[item.type].insertAdjacentHTML("beforeend", html);
+        // клік по картці → відкриваємо модальне вікно
+        wrapper.addEventListener("click", () => {
+            openModalFromCard(wrapper);
+        });
+
+        sectors[item.type].appendChild(wrapper);
     });
 
     updateCardCache();
     applySearchFilter();
 }
+
 
 function renderDaily(list) {
     const box = document.getElementById("daily-container");
@@ -957,6 +952,7 @@ function applySearchFilter() {
 </script>
 </body>
 </html>
+
 
 
 

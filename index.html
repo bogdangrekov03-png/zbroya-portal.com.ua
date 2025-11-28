@@ -702,7 +702,7 @@ footer a:hover {
         orderBy
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// ===== FIREBASE CONFIG =====
+// ===== ТВОЯ КОНФІГУРАЦІЯ =====
 const firebaseConfig = {
   apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
   authDomain: "rooot-71962.firebaseapp.com",
@@ -712,14 +712,12 @@ const firebaseConfig = {
   appId: "1:718921321052:web:614928382d93d2b50eb499"
 };
 
-// Ініціалізація Firebase
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// ===== ГОЛОВНА ФУНКЦІЯ ЗАВАНТАЖЕННЯ =====
 async function loadData() {
     try {
-        // --- ЗБРОЯ ---
+        // weapons
         const qWeapons = query(collection(db, "weapons"), orderBy("name"));
         const snapW = await getDocs(qWeapons);
 
@@ -728,7 +726,7 @@ async function loadData() {
 
         renderWeapons(weapons);
 
-        // --- ЩОДЕННІ НОВИНИ ---
+        // daily
         const qDaily = query(collection(db, "daily"), orderBy("date", "desc"));
         const snapD = await getDocs(qDaily);
 
@@ -738,13 +736,10 @@ async function loadData() {
         renderDaily(daily);
 
     } catch (err) {
-        console.error("❌ Помилка завантаження з Firestore:", err);
+        console.error("Помилка завантаження з Firestore:", err);
     }
 }
 
-
-
-// ===== РЕНДЕР КАРТОК ЗБРОЇ =====
 function renderWeapons(list) {
     const sectors = {
         bp:  document.getElementById("weapons-bp"),
@@ -754,7 +749,7 @@ function renderWeapons(list) {
     };
 
     list.forEach(item => {
-        if (!sectors[item.type]) return; // якщо помилка type
+        if (!sectors[item.type]) return;
 
         const block = `
         <article class="weapon-card">
@@ -774,26 +769,10 @@ function renderWeapons(list) {
         sectors[item.type].innerHTML += block;
     });
 
-    // 🔥 після рендера — одразу фільтруємо (пошук)
+    // Після рендера — запустити фільтр
     applySearchFilter();
 }
 
-
-
-// ===== ПОШУК (ФІЛЬТР КАРТОК) =====
-function applySearchFilter() {
-    const q = searchInput.value.toLowerCase().trim();
-    const cards = document.querySelectorAll(".weapon-card");
-
-    cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(q) ? "block" : "none";
-    });
-}
-
-
-
-// ===== РЕНДЕР ЩОДЕННИХ НОВИН =====
 function renderDaily(list) {
     const box = document.getElementById("daily-container");
     box.innerHTML = "";
@@ -808,21 +787,31 @@ function renderDaily(list) {
                 <div class="daily-text">${item.text || ""}</div>
             </div>
         </article>`;
-
         box.innerHTML += entry;
     });
 }
-// ===== СТАРТ =====
+
+// Запуск
 loadData();
-
-// ===== АКТИВАЦІЯ ПОШУКУ =====
+// ===== ПОШУК =====
 const searchInput = document.getElementById("searchInput");
-searchInput.addEventListener("input", applySearchFilter);
 
+function applySearchFilter() {
+    const q = searchInput.value.toLowerCase().trim();
+    const cards = document.querySelectorAll(".weapon-card");
+
+    cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(q) ? "block" : "none";
+    });
+}
+
+searchInput.addEventListener("input", applySearchFilter);
 </script>
 
 </body>
 </html>
+
 
 
 

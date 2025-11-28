@@ -477,14 +477,13 @@ footer a:hover {
 .search-icon {
     position: absolute;
     right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 12px; /* ФІКСОВАНЕ ВИРІВНЮВАННЯ ПО ПОЛЮ */
+    transform: none;
     font-size: 18px;
     color: var(--accent-soft);
     pointer-events: none;
     text-shadow: 0 0 8px rgba(255,39,39,0.8);
 }
-
 /* Випадаючий список */
 .search-dropdown {
     position: absolute;          /* ПРИКРІПЛЕНО ДО ПОЛЯ */
@@ -980,6 +979,7 @@ function applySearchFilter() {
 
 </body>
 </html>
+
 
 
 

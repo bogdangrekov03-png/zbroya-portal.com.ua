@@ -436,17 +436,23 @@ footer a:hover {
     color: var(--accent);
     text-shadow: 0 0 8px rgba(255, 39, 39, 0.7);
 }
-/* ===== ПОШУК З 🔍 ІКОНОЮ ===== */
+/* ============================
+      ПОШУК + ВИПАДАЮЧИЙ СПИСОК
+   ============================ */
+
+/* Контейнер пошуку */
 .search-box {
     margin-top: 22px;
     width: 100%;
     max-width: 420px;
-    position: relative;
+    position: relative; /* головне! */
+    z-index: 50;
 }
 
+/* Поле пошуку */
 .search-box input {
     width: 100%;
-    padding: 10px 42px 10px 16px; /* місце під іконку */
+    padding: 10px 42px 10px 16px;
     border-radius: 999px;
     background: rgba(10,10,12,0.85);
     border: 1px solid rgba(255,39,39,0.6);
@@ -467,7 +473,7 @@ footer a:hover {
     box-shadow: 0 0 18px rgba(255,39,39,0.9);
 }
 
-/* 🔍 Іконка */
+/* 🔍 Іконка пошуку */
 .search-icon {
     position: absolute;
     right: 14px;
@@ -479,7 +485,43 @@ footer a:hover {
     text-shadow: 0 0 8px rgba(255,39,39,0.8);
 }
 
-/* ⛔ Повідомлення “нічого не знайдено” */
+/* Випадаючий список */
+.search-dropdown {
+    position: absolute;          /* ПРИКРІПЛЕНО ДО ПОЛЯ */
+    top: calc(100% + 6px);       /* Завжди під інпутом */
+    left: 0;
+
+    width: 100%;
+    max-width: 420px;
+
+    background: rgba(10,10,12,0.95);
+    border: 1px solid rgba(255,39,39,0.6);
+    border-radius: 12px;
+    padding: 6px 0;
+
+    box-shadow: 0 0 20px rgba(255,39,39,0.7);
+    backdrop-filter: blur(10px);
+
+    display: none;
+    z-index: 5000;
+}
+
+/* Елемент списку */
+.search-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: var(--text-main);
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,39,39,0.2);
+    transition: 0.2s;
+}
+
+.search-item:hover {
+    background: rgba(255,39,39,0.2);
+    padding-left: 20px;
+}
+
+/* Немає результатів */
 .no-results {
     margin-top: 12px;
     padding: 10px 14px;
@@ -493,40 +535,12 @@ footer a:hover {
     text-align: center;
 }
 
-/* 🟥 Підсвітка слова */
+/* Підсвітка знайденого слова */
 mark {
     background: rgba(255,39,39,0.35);
     color: #fff;
     padding: 0 2px;
     border-radius: 4px;
-}
-    /* ===== ВИПАДАЮЧИЙ СПИСОК ПОШУКУ ===== */
-.search-dropdown {
-    position: fixed;
-    background: rgba(10,10,12,0.95);
-    border: 1px solid rgba(255,39,39,0.6);
-    border-radius: 12px;
-    padding: 6px 0;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 0 20px rgba(255,39,39,0.7);
-    backdrop-filter: blur(10px);
-    z-index: 9999;
-    display: none;
-}
-
-.search-item {
-    padding: 10px 14px;
-    cursor: pointer;
-    color: var(--text-main);
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255,39,39,0.2);
-    transition: 0.2s;
-}
-
-.search-item:hover {
-    background: rgba(255,39,39,0.2);
-    padding-left: 20px;
 }
 
 
@@ -583,12 +597,11 @@ mark {
 </div>
 <div class="search-box">
     <input id="searchInput" type="text" placeholder="Пошук засобів ураження...">
+    <div class="search-icon">🔍</div>
+    <div id="searchDropdown" class="search-dropdown"></div>
+    <div id="noResults" class="no-results">Нічого не знайдено</div>
 </div>
-    <div id="noResults" class="no-results" style="display:none;">
-    ⛔ Нічого не знайдено
-</div>    
-        <div id="searchDropdown" class="search-dropdown"></div>
-    </div>
+
 </section>
 <!-- ПРО СЛУЖБУ -->
 <section id="sec-about">
@@ -864,6 +877,7 @@ loadData();
 
 const searchInput = document.getElementById("searchInput");
 const dropdown = document.getElementById("searchDropdown");
+const noResults = document.getElementById("noResults");
 
 searchInput.addEventListener("input", () => {
     const q = searchInput.value.toLowerCase().trim();
@@ -871,14 +885,15 @@ searchInput.addEventListener("input", () => {
 
     dropdown.innerHTML = "";
     dropdown.style.display = "none";
+    noResults.style.display = "none";
 
     if (q === "") return;
 
     let results = [];
 
     cards.forEach(card => {
-        const name = card.querySelector(".weapon-name")?.innerText.toLowerCase() || "";
-        const desc = card.querySelector(".weapon-desc")?.innerText.toLowerCase() || "";
+        const name = card.querySelector(".weapon-name").innerText.toLowerCase();
+        const desc = card.querySelector(".weapon-desc").innerText.toLowerCase();
 
         if (name.includes(q) || desc.includes(q)) {
             results.push({
@@ -888,23 +903,28 @@ searchInput.addEventListener("input", () => {
         }
     });
 
-    if (results.length === 0) return;
-
-    // ==== ПОЗИЦІОНУВАННЯ СПИСКУ ПІД ІНПУТОМ ====
-    const rect = searchInput.getBoundingClientRect();
-    dropdown.style.top = (rect.bottom + 6) + "px";
-    dropdown.style.left = rect.left + "px";
-    dropdown.style.width = rect.width + "px";
+    if (results.length === 0) {
+        noResults.style.display = "block";
+        return;
+    }
 
     dropdown.style.display = "block";
 
-    results.slice(0, 10).forEach(item => {
+    results.slice(0, 12).forEach(item => {
         const div = document.createElement("div");
         div.className = "search-item";
-        div.innerHTML = item.name;
+
+        // Підсвітка
+        const safeName = item.name.replace(
+            new RegExp(q, "gi"),
+            match => `<mark>${match}</mark>`
+        );
+
+        div.innerHTML = safeName;
 
         div.addEventListener("click", () => {
             dropdown.style.display = "none";
+            searchInput.value = item.name;
 
             item.element.scrollIntoView({
                 behavior: "smooth",
@@ -919,13 +939,13 @@ searchInput.addEventListener("input", () => {
     });
 });
 
-
-// Закривання списку при кліку поза ним
-document.addEventListener("click", (e) => {
+// Закриття списку при кліку поза ним
+document.addEventListener("click", e => {
     if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
         dropdown.style.display = "none";
     }
 });
+
 
 
 function applySearchFilter() {
@@ -960,6 +980,7 @@ function applySearchFilter() {
 
 </body>
 </html>
+
 
 
 

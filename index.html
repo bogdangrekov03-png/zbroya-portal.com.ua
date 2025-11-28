@@ -564,7 +564,6 @@ mark {
     <div class="hud-menu" id="hudMenu">
         <h4>Розділи</h4>
         <ul>
-            <li><button data-target="sec-daily">Щоденні новини <span></button></li>
             <li><button data-target="sec-bp">Боєприпаси <span></button></li>
             <li><button data-target="sec-rk">Ракетні комплекси <span></button></li>
             <li><button data-target="sec-pvo">Протиповітряна оборона <span></button></li>
@@ -640,13 +639,6 @@ mark {
         9. Виведення з ладу його систем забезпечення.
     </p>
 </section>
-<!-- ЩОДЕННІ ОНОВЛЕННЯ (ТВОЇ ФОТО + ОПИС) -->
-<section id="sec-daily">
-    <h2 class="section-title">Щоденні новини</h2>
-    <p class="daily-note">
-    </p>
-    <div id="daily-container"></div>
-</section>
 <!-- БОЄПРИПАСИ -->
 <section id="sec-bp">
     <h2 class="section-title">Боєприпаси</h2>
@@ -714,7 +706,6 @@ mark {
         www.zbroya-portal.com.ua
     </a>
 </footer>
-
 
 <!-- ===== JS + FIREBASE (MODULE) ===== -->
 <script type="module">
@@ -876,7 +867,6 @@ async function loadData() {
 
 loadData();
 
-
 // ========= ПОШУК З ВИПАДАЮЧИМ СПИСКОМ =========
 
 const searchInput = document.getElementById("searchInput");
@@ -969,13 +959,10 @@ function applySearchFilter() {
 
     noResults.style.display = (shown === 0 && q !== "") ? "block" : "none";
 }
-
-
 </script>
-
-
 </body>
 </html>
+
 
 
 

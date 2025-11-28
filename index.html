@@ -502,19 +502,25 @@ mark {
 }
     /* ===== ВИПАДАЮЧИЙ СПИСОК ПОШУКУ ===== */
 .search-dropdown {
-    position: absolute;
+    position: fixed;
+    top: 185px; /* можна підкоригувати */
+    left: 50%;
+    transform: translateX(-50%);
+
     width: 100%;
     max-width: 420px;
-    background: rgba(10,10,12,0.92);
+
+    background: rgba(10,10,12,0.95);
     border: 1px solid rgba(255,39,39,0.6);
     border-radius: 12px;
-    margin-top: 6px;
     padding: 6px 0;
-    box-shadow: 0 0 15px rgba(255,39,39,0.5);
+    box-shadow: 0 0 20px rgba(255,39,39,0.7);
+    backdrop-filter: blur(10px);
+
+    z-index: 9999;
     display: none;
-    z-index: 100;
-    backdrop-filter: blur(8px);
 }
+
 
 .search-item {
     padding: 10px 14px;
@@ -961,6 +967,7 @@ function applySearchFilter() {
 
 </body>
 </html>
+
 
 
 

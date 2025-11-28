@@ -436,6 +436,35 @@ footer a:hover {
     color: var(--accent);
     text-shadow: 0 0 8px rgba(255, 39, 39, 0.7);
 }
+/* ===== ПОШУК ===== */
+.search-box {
+    margin-top: 22px;
+    width: 100%;
+    max-width: 420px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(10,10,12,0.85);
+    border: 1px solid rgba(255,39,39,0.6);
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+    box-shadow: 0 0 12px rgba(255,39,39,0.5);
+    transition: 0.2s;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-box input:focus {
+    background: rgba(18,0,0,0.9);
+    border-color: var(--accent);
+    box-shadow: 0 0 18px rgba(255,39,39,0.9);
+}
 
 </style>
 </head>
@@ -757,10 +786,27 @@ footer a:hover {
     }
 
     loadData();
+    // ===== ПОШУК КАРТОК =====
+const searchInput = document.getElementById("searchInput");
+
+searchInput.addEventListener("input", () => {
+    const q = searchInput.value.toLowerCase().trim();
+
+    // Всі картки
+    const cards = document.querySelectorAll(".weapon-card");
+
+    cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        // Показуємо, якщо вміст картки містить текст пошуку
+        card.style.display = text.includes(q) ? "block" : "none";
+    });
+});
+
 </script>
 
 </body>
 </html>
+
 
 
 

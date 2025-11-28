@@ -159,8 +159,11 @@
         <label>Тег (коротко, наприклад: артилерія, РСЗВ)</label>
         <input id="w_tag" />
 
-        <label>Характеристики / дальність</label>
-        <input id="w_range" />
+        <label>Характеристики (кожна з нового рядка)</label>
+<textarea id="w_specs" placeholder="Калібр: 5.45 мм
+Маса кулі: 3.4 г
+Початкова швидкість: 900 м/с"></textarea>
+
 
         <label>Опис</label>
         <textarea id="w_desc"></textarea>
@@ -381,24 +384,40 @@
     });
 
     // ==== Додати Daily ====
-    btnAddDaily.addEventListener("click", async () => {
-        try {
-            await addDoc(collection(db, "daily"), {
-                title: d_title.value,
-                date:  d_date.value,
-                text:  d_text.value,
-                img:   d_img.value
-            });
-            d_title.value = "";
-            d_date.value  = "";
-            d_text.value  = "";
-            d_img.value   = "";
-            await loadDaily();
-            alert("Оновлення додано");
-        } catch (err) {
-            alert("Помилка додавання: " + err.message);
-        }
-    });
+// ==== Додати Weapon (оновлений) ====
+btnAddWeapon.addEventListener("click", async () => {
+    try {
+        await addDoc(collection(db, "weapons"), {
+            name:  w_name.value.trim(),
+            type:  w_type.value,
+            tag:   w_tag.value.trim(),
+            img:   w_img.value.trim(),
+
+            // основний опис
+            desc:  w_desc.value.trim(),
+
+            // перетворюємо textarea → масив характеристик
+            specs: w_specs.value
+                .split("\n")
+                .map(line => line.trim())
+                .filter(line => line.length > 0)
+        });
+
+        // очищаємо поля
+        w_name.value = "";
+        w_tag.value = "";
+        w_img.value = "";
+        w_desc.value = "";
+        w_specs.value = "";
+
+        await loadWeapons();
+        alert("Засіб додано");
+
+    } catch (err) {
+        alert("Помилка додавання: " + err.message);
+    }
+});
+
 
     // ==== Видалення ====
     async function deleteWeapon(id) {
@@ -415,4 +434,5 @@
 </script>
 
 </body>
+
 </html>

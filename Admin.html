@@ -43,10 +43,8 @@
         color: #fff;
         font-size: 14px;
     }
-    textarea {
-        min-height: 70px;
-        resize: vertical;
-    }
+    textarea { min-height: 70px; resize: vertical; }
+
     button {
         margin-top: 12px;
         padding: 9px 16px;
@@ -58,15 +56,10 @@
         font-weight: 600;
         box-shadow: 0 0 14px rgba(255,0,0,0.7);
     }
-    button:hover {
-        background: #d00000;
-    }
+    button:hover { background: #d00000; }
 
-    .hidden { display: none; }
+    .items-list { margin-top: 12px; }
 
-    .items-list {
-        margin-top: 12px;
-    }
     .item-row {
         padding: 10px;
         border-radius: 10px;
@@ -75,17 +68,20 @@
         margin-bottom: 8px;
         font-size: 13px;
     }
+
     .item-row h4 {
         margin: 0 0 4px;
         font-size: 14px;
         color: #ff5757;
     }
+
     .item-actions {
         margin-top: 6px;
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
     }
+
     .btn-small {
         padding: 4px 10px;
         font-size: 12px;
@@ -102,14 +98,14 @@
         margin-bottom: 10px;
     }
 
-    /* Пошук */
+    /* SEARCH */
     #searchInput {
         width: 300px;
         padding: 8px 12px;
         margin-bottom: 12px;
     }
 
-    /* Прев’ю фото */
+    /* PREVIEW */
     #imgPreview {
         margin-top: 10px;
         max-width: 200px;
@@ -118,26 +114,36 @@
         display: none;
     }
 
-    /* Кнопки сортування */
+    /* PROGRESS */
+    #uploadProgress {
+        width: 100%;
+        height: 10px;
+        margin-top: 8px;
+    }
+
+    /* SORT */
     .sort-bar { display: flex; gap: 10px; margin-bottom: 14px; }
     .sort-btn { background: #222; border: 1px solid red; }
 </style>
 </head>
-<body>
 
+<body>
 <h1>Адмін-панель СЗУ</h1>
 
-<!-- ЛОГІН -->
+<!-- LOGIN -->
 <div id="loginBox" class="card">
     <h2>Вхід адміністратора</h2>
+
     <label>Email</label>
     <input id="loginEmail" type="email" placeholder="admin@example.com" />
+
     <label>Пароль</label>
     <input id="loginPass" type="password" placeholder="Пароль" />
+
     <button id="btnLogin">Увійти</button>
 </div>
 
-<!-- АДМІН-ПАНЕЛЬ -->
+<!-- ADMIN PANEL -->
 <div id="adminPanel" class="hidden">
 
     <div class="card">
@@ -147,7 +153,7 @@
         </div>
     </div>
 
-    <!-- Додати / Редагувати -->
+    <!-- ADD / EDIT FORM -->
     <div class="card">
         <h2 id="formTitle">Додати засіб ураження</h2>
 
@@ -167,27 +173,31 @@
         <label>Тег</label>
         <input id="w_tag" />
 
-        <label>Характеристики (кожна з нового рядка)</label>
-        <textarea id="w_specs"></textarea>
+        <label>Характеристики</label>
+        <textarea id="w_specs" placeholder="калібр: 5.45 мм"></textarea>
 
         <label>Опис</label>
         <textarea id="w_desc"></textarea>
 
-        <label>URL фото</label>
+        <label>URL фото (авто генерується при завантаженні)</label>
         <input id="w_img" />
 
         <img id="imgPreview" />
 
+        <label>Завантажити власне фото</label>
+        <input id="fileInput" type="file" accept="image/*">
+        <progress id="uploadProgress" value="0" max="100" class="hidden"></progress>
+
         <button id="btnSaveWeapon">Зберегти</button>
     </div>
 
-    <!-- Сортування + пошук -->
+    <!-- LIST -->
     <div class="card">
         <h2>Усі засоби ураження</h2>
 
         <div class="sort-bar">
-            <button class="sort-btn" data-sort="name">Сортувати: Назва</button>
-            <button class="sort-btn" data-sort="type">Сортувати: Категорія</button>
+            <button class="sort-btn" data-sort="name">Назва</button>
+            <button class="sort-btn" data-sort="type">Категорія</button>
         </div>
 
         <input id="searchInput" type="text" placeholder="Пошук..." />
@@ -197,29 +207,23 @@
 
 </div>
 
-
 <script type="module">
 
-// ====================== FIREBASE ======================
+/* ========== IMPORTS ========== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import {
-    getFirestore,
-    collection,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-    getDocs
+    getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 import {
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-// ====================== CONFIG ======================
+import {
+    getStorage, ref, uploadBytesResumable, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+/* ========== CONFIG ========== */
 const firebaseConfig = {
     apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
     authDomain: "rooot-71962.firebaseapp.com",
@@ -230,39 +234,42 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const db = getFirestore(app);
 const auth = getAuth();
+const storage = getStorage(app);
 
-// ====================== DOM ======================
-const loginBox   = document.getElementById("loginBox");
+/* ========== DOM ========== */
+const loginBox = document.getElementById("loginBox");
 const adminPanel = document.getElementById("adminPanel");
-const userInfo   = document.getElementById("userInfo");
+const userInfo = document.getElementById("userInfo");
 
-const btnLogin  = document.getElementById("btnLogin");
-const loginEmail = document.getElementById("loginEmail");
-const loginPass  = document.getElementById("loginPass");
+const btnLogin = document.getElementById("btnLogin");
 const btnLogout = document.getElementById("btnLogout");
+const loginEmail = document.getElementById("loginEmail");
+const loginPass = document.getElementById("loginPass");
 
-const formTitle = document.getElementById("formTitle");
 const editId = document.getElementById("editId");
+const formTitle = document.getElementById("formTitle");
 
-const w_name  = document.getElementById("w_name");
-const w_type  = document.getElementById("w_type");
-const w_tag   = document.getElementById("w_tag");
-const w_desc  = document.getElementById("w_desc");
+const w_name = document.getElementById("w_name");
+const w_type = document.getElementById("w_type");
+const w_tag = document.getElementById("w_tag");
 const w_specs = document.getElementById("w_specs");
-const w_img   = document.getElementById("w_img");
-const btnSaveWeapon = document.getElementById("btnSaveWeapon");
-
+const w_desc = document.getElementById("w_desc");
+const w_img = document.getElementById("w_img");
 const imgPreview = document.getElementById("imgPreview");
+
+const fileInput = document.getElementById("fileInput");
+const uploadProgress = document.getElementById("uploadProgress");
+
+const btnSaveWeapon = document.getElementById("btnSaveWeapon");
 const weaponsList = document.getElementById("weaponsList");
 const searchInput = document.getElementById("searchInput");
 
 let weapons = [];
 
-
-// ====================== AUTH ======================
-onAuthStateChanged(auth, (user) => {
+/* ========== AUTH ========== */
+onAuthStateChanged(auth, user => {
     if (user) {
         loginBox.classList.add("hidden");
         adminPanel.classList.remove("hidden");
@@ -277,78 +284,103 @@ onAuthStateChanged(auth, (user) => {
 btnLogin.onclick = async () => {
     try {
         await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
-    } catch (e) {
-        alert("Помилка входу: " + e.message);
+    } catch (err) {
+        alert("Помилка: " + err.message);
     }
 };
 
 btnLogout.onclick = () => signOut(auth);
 
-
-// ====================== LOAD ======================
+/* ========== LOAD ========== */
 async function loadWeapons() {
     const snap = await getDocs(collection(db, "weapons"));
     weapons = [];
-
     snap.forEach(d => weapons.push({ id: d.id, ...d.data() }));
 
     renderWeapons(weapons);
 }
 
-
-// ====================== RENDER ======================
+/* ========== RENDER ========== */
 function renderWeapons(list) {
     weaponsList.innerHTML = "";
 
     list.forEach(w => {
         const row = document.createElement("div");
         row.className = "item-row";
+
         row.innerHTML = `
             <h4>${w.name}</h4>
             <small>${w.type.toUpperCase()} • ${w.tag}</small>
 
             <div class="item-actions">
-                <button class="btn-small btn-edit" data-id="${w.id}">Редагувати</button>
-                <button class="btn-small btn-danger" data-id="${w.id}">Видалити</button>
+                <button class="btn-small btn-edit">Редагувати</button>
+                <button class="btn-small btn-danger">Видалити</button>
             </div>
         `;
 
-        // Редагування
         row.querySelector(".btn-edit").onclick = () => loadForEdit(w);
-
-        // Видалення
         row.querySelector(".btn-danger").onclick = () => deleteWeapon(w.id);
 
         weaponsList.appendChild(row);
     });
 }
 
-
-// ====================== PREVIEW IMAGE ======================
+/* ========== IMAGE PREVIEW ========== */
 w_img.oninput = () => {
-    imgPreview.src = w_img.value;
+    imgPreview.src = w_img.value.trim();
     imgPreview.style.display = w_img.value.trim() ? "block" : "none";
 };
 
+/* ========== FILE UPLOAD ========== */
+fileInput.onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-// ====================== ADD / UPDATE ======================
+    const fileName = Date.now() + "_" + file.name;
+    const storageRef = ref(storage, "weapons/" + fileName);
+
+    uploadProgress.classList.remove("hidden");
+
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on("state_changed",
+        snap => {
+            uploadProgress.value = (snap.bytesTransferred / snap.totalBytes) * 100;
+        },
+        err => {
+            alert("Помилка: " + err.message);
+            uploadProgress.classList.add("hidden");
+        },
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then(url => {
+
+                w_img.value = url;
+                imgPreview.src = url;
+                imgPreview.style.display = "block";
+
+                uploadProgress.classList.add("hidden");
+                alert("Фото завантажено!");
+            });
+        }
+    );
+};
+
+/* ========== ADD / UPDATE ========== */
 btnSaveWeapon.onclick = async () => {
     const data = {
         name: w_name.value.trim(),
         type: w_type.value,
-        tag:  w_tag.value.trim(),
+        tag: w_tag.value.trim(),
         desc: w_desc.value.trim(),
-        img:  w_img.value.trim(),
-        specs: w_specs.value.split("\n").map(l => l.trim()).filter(l => l)
+        img: w_img.value.trim(),
+        specs: w_specs.value.split("\n").map(s => s.trim()).filter(s => s),
     };
 
     try {
         if (editId.value) {
-            // UPDATE
             await updateDoc(doc(db, "weapons", editId.value), data);
             alert("Оновлено!");
         } else {
-            // ADD
             await addDoc(collection(db, "weapons"), data);
             alert("Додано!");
         }
@@ -356,22 +388,21 @@ btnSaveWeapon.onclick = async () => {
         clearForm();
         loadWeapons();
 
-    } catch (e) {
-        alert("Помилка: " + e.message);
+    } catch (err) {
+        alert("Помилка: " + err.message);
     }
 };
 
-
-// ====================== LOAD FOR EDIT ======================
+/* ========== LOAD FOR EDIT ========== */
 function loadForEdit(w) {
     editId.value = w.id;
 
-    w_name.value  = w.name;
-    w_type.value  = w.type;
-    w_tag.value   = w.tag;
-    w_desc.value  = w.desc;
-    w_img.value   = w.img;
+    w_name.value = w.name;
+    w_type.value = w.type;
+    w_tag.value = w.tag;
+    w_desc.value = w.desc;
     w_specs.value = (w.specs || []).join("\n");
+    w_img.value = w.img;
 
     imgPreview.src = w.img;
     imgPreview.style.display = "block";
@@ -380,8 +411,7 @@ function loadForEdit(w) {
     btnSaveWeapon.textContent = "Оновити";
 }
 
-
-// ====================== CLEAR FORM ======================
+/* ========== CLEAR FORM ========== */
 function clearForm() {
     editId.value = "";
     w_name.value = "";
@@ -395,16 +425,14 @@ function clearForm() {
     btnSaveWeapon.textContent = "Зберегти";
 }
 
-
-// ====================== DELETE ======================
+/* ========== DELETE ========== */
 async function deleteWeapon(id) {
     if (!confirm("Видалити?")) return;
     await deleteDoc(doc(db, "weapons", id));
     loadWeapons();
 }
 
-
-// ====================== SORTING ======================
+/* ========== SORT ========== */
 document.querySelectorAll(".sort-btn").forEach(btn => {
     btn.onclick = () => {
         const key = btn.dataset.sort;
@@ -413,8 +441,7 @@ document.querySelectorAll(".sort-btn").forEach(btn => {
     };
 });
 
-
-// ====================== SEARCH ======================
+/* ========== SEARCH ========== */
 searchInput.oninput = () => {
     const q = searchInput.value.toLowerCase();
     const filtered = weapons.filter(w =>
@@ -425,5 +452,7 @@ searchInput.oninput = () => {
 };
 
 </script>
+
 </body>
 </html>
+

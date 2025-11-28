@@ -500,6 +500,41 @@ mark {
     padding: 0 2px;
     border-radius: 4px;
 }
+    /* ===== ВИПАДАЮЧИЙ СПИСОК ПОШУКУ ===== */
+.search-dropdown {
+    position: absolute;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(10,10,12,0.92);
+    border: 1px solid rgba(255,39,39,0.6);
+    border-radius: 12px;
+    margin-top: 6px;
+    padding: 6px 0;
+    box-shadow: 0 0 15px rgba(255,39,39,0.5);
+    display: none;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+
+.search-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: var(--text-main);
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,39,39,0.2);
+    transition: 0.2s;
+}
+
+.search-item:last-child {
+    border-bottom: none;
+}
+
+.search-item:hover {
+    background: rgba(255,39,39,0.15);
+    color: #fff;
+    padding-left: 18px;
+}
+
 </style>
 </head>
 <body>
@@ -557,6 +592,7 @@ mark {
     <div id="noResults" class="no-results" style="display:none;">
     ⛔ Нічого не знайдено
 </div>    
+        <div id="searchDropdown" class="search-dropdown"></div>
     </div>
 </section>
 <!-- ПРО СЛУЖБУ -->
@@ -829,29 +865,69 @@ async function loadData() {
 loadData();
 
 
-/* ============================================================================
-    ПОШУК З ІКОНКОЮ, ПІДСВІТКОЮ ТА "НІЧОГО НЕ ЗНАЙДЕНО"
-============================================================================ */
+// ========= ПОШУК З ВИПАДАЮЧИМ СПИСКОМ =========
+
 const searchInput = document.getElementById("searchInput");
-const noResults   = document.getElementById("noResults");
+const dropdown = document.getElementById("searchDropdown");
 
-let cachedCards = [];
-
-function updateCardCache() {
-    cachedCards = Array.from(document.querySelectorAll(".weapon-card"));
-}
-
-function highlight(text, query) {
-    if (!query) return text;
-    const reg = new RegExp(`(${query})`, "gi");
-    return text.replace(reg, "<mark>$1</mark>");
-}
-
-let timer;
 searchInput.addEventListener("input", () => {
-    clearTimeout(timer);
-    timer = setTimeout(applySearchFilter, 120);
+    const q = searchInput.value.toLowerCase().trim();
+    const cards = Array.from(document.querySelectorAll(".weapon-card"));
+
+    dropdown.innerHTML = "";
+    dropdown.style.display = "none";
+
+    if (q === "") return;
+
+    let results = [];
+
+    cards.forEach(card => {
+        const name = card.querySelector(".weapon-name")?.innerText.toLowerCase() || "";
+        const desc = card.querySelector(".weapon-desc")?.innerText.toLowerCase() || "";
+
+        if (name.includes(q) || desc.includes(q)) {
+            results.push({
+                name: card.querySelector(".weapon-name")?.innerText,
+                element: card
+            });
+        }
+    });
+
+    if (results.length === 0) return;
+
+    dropdown.style.display = "block";
+
+    results.slice(0, 8).forEach(item => {
+        const div = document.createElement("div");
+        div.className = "search-item";
+        div.innerHTML = item.name;
+
+        div.addEventListener("click", () => {
+            dropdown.style.display = "none";
+
+            item.element.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+            // коротка підсвітка картки
+            item.element.style.boxShadow = "0 0 25px rgba(255,39,39,1)";
+            setTimeout(() => {
+                item.element.style.boxShadow = "";
+            }, 900);
+        });
+
+        dropdown.appendChild(div);
+    });
 });
+
+// Закривання списку при кліку поза ним
+document.addEventListener("click", (e) => {
+    if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = "none";
+    }
+});
+
 
 function applySearchFilter() {
     const q = searchInput.value.toLowerCase().trim();
@@ -885,6 +961,7 @@ function applySearchFilter() {
 
 </body>
 </html>
+
 
 
 

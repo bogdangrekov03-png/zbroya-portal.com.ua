@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Засоби ураження</title>
+<title>Засоби ураження – Головна</title>
 
 <style>
     :root {
@@ -183,7 +183,7 @@
         box-shadow: 0 0 18px rgba(255,39,39,0.8);
     }
 
-    /* ===== HERO з 3D ПАРАЛАКСОМ ===== */
+    /* ===== HERO ===== */
     .hero {
         margin-top: 52px;
         position: relative;
@@ -258,7 +258,7 @@
         background: rgba(3,3,5,0.9);
     }
 
-    /* ===== РОЗДІЛИ ===== */
+    /* ===== СЕКЦІЇ ===== */
     section {
         padding: 32px 18px;
         max-width: 900px;
@@ -280,466 +280,73 @@
         margin-bottom: 18px;
     }
 
-   /* ===== СІТКА КАРТОК ===== */
-section {
-    max-width: 1100px;
-    margin: 0 auto 40px;
-    padding: 0 16px;
-}
-
-/* ===== КОМПАКТНІ КВАДРАТНІ ІКОНКИ ===== */
-
-.cards-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center; /* центровано красиво */
-}
-
-.weapon-card {
-    width: 110px;                 /* компактна ширина */
-    background: var(--bg-card);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 39, 39, 0.5);
-    box-shadow: 0 0 10px rgba(255, 39, 39, 0.4);
-    overflow: hidden;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.25s ease;
-}
-
-/* ефект наведення */
-.weapon-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 18px rgba(255,39,39,1);
-}
-
-.weapon-image {
-    width: 100%;
-    height: 100px;          /* квадрат */
-    object-fit: cover;
-    border-bottom: 1px solid rgba(255,39,39,0.3);
-}
-
-.weapon-body {
-    padding: 4px 2px;
-}
-
-.weapon-name {
-    font-size: 11px;
-    font-weight: 600;
-    color: #ff5757;
-    line-height: 1.2;
-}
-
-/* ===== 3 картки на мобільному гарантовано ===== */
-@media (max-width: 480px) {
-    .weapon-card {
-        width: calc(33.33% - 12px);   /* три в ряд */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
     }
-    .weapon-image {
-        height: 90px;                 /* трохи менше */
+
+    .cat-card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        border: 1px solid rgba(255,39,39,0.6);
+        box-shadow: 0 0 12px rgba(255,39,39,0.5);
+        padding: 14px;
+        cursor: pointer;
+        transition: 0.22s;
+        position: relative;
+        overflow: hidden;
     }
-    .weapon-name {
-        font-size: 10px;
+
+    .cat-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,0,0,0.12), transparent 50%);
+        opacity: 0;
+        transition: 0.22s;
     }
-}
 
-
-/* Ховаємо зайве */
-.weapon-tag,
-.weapon-meta,
-.weapon-desc {
-    display: none;
-}
-
-/* ===== МОБІЛЬНА АДАПТАЦІЯ ===== */
-@media (max-width: 480px) {
-    .weapon-image {
-        height: 80px;
+    .cat-card h3 {
+        font-size: 16px;
+        color: #ff5757;
+        margin-bottom: 8px;
     }
-    .weapon-name {
-        font-size: 11px;
+
+    .cat-card p {
+        font-size: 13px;
+        color: var(--text-muted);
     }
-}
 
-/* посилання */
-footer {
-    text-align: center;
-    padding: 20px 0;
-    font-size: 13px;
-    color: var(--text-muted);
-}
+    .cat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 18px rgba(255,39,39,0.9);
+    }
 
-/* стиль посилання */
-footer a {
-    color: var(--accent-soft);
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.2s;
-}
+    .cat-card:hover::before {
+        opacity: 1;
+    }
 
-footer a:hover {
-    color: var(--accent);
-    text-shadow: 0 0 8px rgba(255, 39, 39, 0.7);
-}
+    footer {
+        text-align: center;
+        padding: 20px 0 30px;
+        font-size: 13px;
+        color: var(--text-muted);
+    }
 
-/* ============================
-      ПОШУК + ВИПАДАЮЧИЙ СПИСОК
-   ============================ */
+    footer a {
+        color: var(--accent-soft);
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
 
-/* Контейнер пошуку */
-.search-box {
-    margin-top: 22px;
-    margin-bottom: 22px;  /* ← ДОДАВ “ENTER” */
-    width: 100%;
-    max-width: 420px;
-    position: relative;
-    z-index: 50;
-}
-
-
-/* Поле пошуку */
-.search-box input {
-    width: 100%;
-    padding: 10px 42px 10px 16px;
-    border-radius: 999px;
-    background: rgba(10,10,12,0.85);
-    border: 1px solid rgba(255,39,39,0.6);
-    color: var(--text-main);
-    font-size: 14px;
-    outline: none;
-    box-shadow: 0 0 12px rgba(255,39,39,0.5);
-    transition: 0.2s;
-}
-
-.search-box input::placeholder {
-    color: var(--text-muted);
-}
-
-.search-box input:focus {
-    background: rgba(18,0,0,0.9);
-    border-color: var(--accent);
-    box-shadow: 0 0 18px rgba(255,39,39,0.9);
-}
-
-/* 🔍 Іконка пошуку */
-.search-icon {
-    position: absolute;
-    right: 14px;
-    top: 9px; /* ФІКСОВАНЕ ВИРІВНЮВАННЯ ПО ПОЛЮ */
-    transform: none;
-    font-size: 18px;
-    color: var(--accent-soft);
-    pointer-events: none;
-    text-shadow: 0 0 8px rgba(255,39,39,0.8);
-}
-/* Випадаючий список */
-.search-dropdown {
-    position: absolute;          /* ПРИКРІПЛЕНО ДО ПОЛЯ */
-    top: calc(100% + 6px);       /* Завжди під інпутом */
-    left: 0;
-
-    width: 100%;
-    max-width: 420px;
-
-    background: rgba(10,10,12,0.95);
-    border: 1px solid rgba(255,39,39,0.6);
-    border-radius: 12px;
-    padding: 6px 0;
-
-    box-shadow: 0 0 20px rgba(255,39,39,0.7);
-    backdrop-filter: blur(10px);
-
-    display: none;
-    z-index: 5000;
-}
-
-/* Елемент списку */
-.search-item {
-    padding: 10px 14px;
-    cursor: pointer;
-    color: var(--text-main);
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255,39,39,0.2);
-    transition: 0.2s;
-}
-
-.search-item:hover {
-    background: rgba(255,39,39,0.2);
-    padding-left: 20px;
-}
-
-/* Немає результатів */
-.no-results {
-    margin-top: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    background: rgba(40,0,0,0.55);
-    border: 1px solid rgba(255,39,39,0.5);
-    color: var(--accent-soft);
-    font-size: 14px;
-    display: none;
-    box-shadow: 0 0 16px rgba(255,39,39,0.35);
-    text-align: center;
-}
-
-/* Підсвітка знайденого слова */
-mark {
-    background: rgba(255,39,39,0.35);
-    color: #fff;
-    padding: 0 2px;
-    border-radius: 4px;
-}
-/* ====== МОДАЛКА ====== */
-.weapon-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    transition: 0.3s ease;
-}
-
-.weapon-modal.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.weapon-modal-content {
-    width: 92%;
-    max-width: 520px;
-    height: 82vh;                 /* фіксована висота */
-    background: #0b0b0f;
-    border: 1px solid rgba(255, 39, 39, 0.7);
-    border-radius: 18px;
-    padding: 14px;
-    box-shadow: 0 0 35px rgba(255,0,0,0.7);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    animation: modalAppear 0.25s ease-out;
-}
-
-@keyframes modalAppear {
-    from { transform: scale(0.8); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
-
-/* ====== ХРЕСТИК ====== */
-.modal-close {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,39,39,0.6);
-    background: rgba(10, 0, 0, 0.85);
-    color: #ff5757;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(255,39,39,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s ease;
-}
-
-.modal-close:hover {
-    background: rgba(40, 0, 0, 1);
-    color: #fff;
-    box-shadow: 0 0 15px rgba(255,0,0,1);
-    transform: scale(1.15);
-}
-
-/* ====== ЗОБРАЖЕННЯ ====== */
-.modal-img-wrapper {
-    width: 100%;
-    height: 38vh;                /* НЕ змінюється */
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(255, 39, 39, 0.5);
-}
-
-.modal-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;         /* 🔥 ідеальне масштабування */
-    background: #000;
-}
-
-/* ====== ПРОКРУТКА ====== */
-.modal-scroll {
-    margin-top: 14px;
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 8px;
-}
-
-.modal-scroll::-webkit-scrollbar {
-    width: 7px;
-}
-
-.modal-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255,39,39,0.6);
-    border-radius: 5px;
-}
-
-.modal-scroll::-webkit-scrollbar-track {
-    background: rgba(60,0,0,0.4);
-}
-
-/* ====== ТЕКСТ ====== */
-.weapon-modal h2 {
-    font-size: 22px;
-    color: ##ffffff;
-    margin-bottom: 6px;
-}
-
-.modal-range {
-    font-size: 14px;
-    color: #bbbbbb;
-    margin-bottom: 12px;
-}
-
-.modal-desc {
-    font-size: 15px;
-    line-height: 1.5;
-    color: #e5e5e5;
-}
-/* ====== ТАКТИЧНІ ІНФО-БЛОКИ ====== */
-
-.info-block {
-    position: relative;
-    margin-bottom: 18px;
-    padding: 16px 18px;
-    background: rgba(10, 0, 0, 0.55);
-    border: 1px solid rgba(255, 40, 40, 0.35);
-    border-radius: 12px;
-    box-shadow: 
-        0 0 12px rgba(255,0,0,0.25),
-        inset 0 0 18px rgba(255,0,0,0.15);
-    backdrop-filter: blur(6px);
-    overflow: hidden;
-}
-
-/* Декоративна лінія зверху */
-.info-block::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 14px;
-    width: 60%;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(255,60,60,0.8), transparent);
-}
-
-/* Скошена панель заголовка */
-.info-block h3 {
-    position: relative;
-    display: inline-block;
-    padding: 4px 10px;
-    background: rgba(40,0,0,0.8);
-    border-left: 3px solid #ff2727;
-    border-radius: 4px 8px 8px 4px;
-    text-transform: uppercase;
-    font-size: 14px;
-    letter-spacing: 0.8px;
-    color: #ff5757;
-    margin-bottom: 10px;
-    text-shadow: 0 0 8px rgba(255,50,50,0.9);
-}
-
-/* Маленька іконка перед заголовком */
-.info-block h3::before {
-    content: "◆";
-    font-size: 10px;
-    margin-right: 6px;
-    color: #ff2727;
-}
-
-/* Текст */
-.info-block p,
-.info-block li {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #e5e5e5;
-}
-
-/* Список характеристик */
-.info-block ul {
-    margin-top: 8px;
-    margin-left: 14px;
-}
-
-.info-block ul li {
-    margin-bottom: 5px;
-    padding-left: 6px;
-    position: relative;
-}
-
-/* Тактичний маркер */
-.info-block ul li::before {
-    content: "▸";
-    position: absolute;
-    left: -10px;
-    color: #ff2727;
-    font-size: 12px;
-}
-
-/* Ефект наведення */
-.info-block:hover {
-    border-color: rgba(255, 80, 80, 0.65);
-    box-shadow: 
-        0 0 18px rgba(255,0,0,0.55),
-        inset 0 0 25px rgba(255,0,0,0.25);
-    transform: translateY(-1px);
-    transition: 0.25s ease;
-}
-
-
+    footer a:hover {
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(255, 39, 39, 0.7);
+    }
 </style>
 </head>
-    /* ====== модалка ====== */
-<div id="weaponModal" class="weapon-modal hidden">
-    <div class="weapon-modal-content">
-
-        <button class="modal-close">
-            ✖
-        </button>
-
-        <div class="modal-img-wrapper">
-            <img id="modalImg" class="modal-img" alt="">
-        </div>
-
-        <div class="modal-scroll">
-          <h2 id="modalName"></h2>
-
-<div class="info-block">
-    <h3>ОПИС</h3>
-    <p id="modalDesc"></p>
-</div>
-
-<div class="info-block">
-    <h3>ХАРАКТЕРИСТИКИ</h3>
-    <ul id="modalSpecs"></ul>
-</div>
-
-        </div>
-
-    </div>
-</div>
-
-
-
 <body>
 
 <!-- HUD НАВІГАЦІЯ -->
@@ -755,134 +362,83 @@ mark {
     <div class="hud-menu" id="hudMenu">
         <h4>Розділи</h4>
         <ul>
-            <li><button data-target="sec-bp">Боєприпаси <span></button></li>
-            <li><button data-target="sec-rk">Ракетні комплекси <span></button></li>
-            <li><button data-target="sec-pvo">Протиповітряна оборона <span></button></li>
-            <li><button data-target="sec-uav">БпЛА <span></button></li>
-            
+            <li><button data-link="ammo.html">Боєприпаси <span>BP</span></button></li>
+            <li><button data-link="rockets.html">Ракетні комплекси <span>RK</span></button></li>
+            <li><button data-link="pvo.html">Протиповітряна оборона <span>ППО</span></button></li>
+            <li><button data-link="uav.html">БпЛА <span>UAV</span></button></li>
+            <li><button data-link="admin.html">Адмін-панель <span>ADMIN</span></button></li>
         </ul>
     </div>
 </div>
 
-<!-- HERO З ПАРАЛАКСОМ -->
+<!-- HERO -->
 <section class="hero">
     <div class="hero-parallax" id="heroParallax"></div>
 
     <div class="hero-inner">
         <div class="hero-badge">
-            • тактичний огляд • 
+            • тактичний огляд •
         </div>
         <h1 class="hero-title">Засоби ураження</h1>
         <p class="hero-sub">
-            Інформаційна сторінка про основні засоби ураження, їх завдання, 
-            застосування.
+            Інформаційний портал про основні засоби ураження, їх завдання, сфери застосування
+            та тактичні можливості. Зручний доступ до даних по боєприпасах, ракетних комплексах,
+            ППО та безпілотних системах.
         </p>
-<div class="search-box">
-    <input id="searchInput" type="text" placeholder="Пошук засобів ураження...">
-    <div class="search-icon">🔍</div>
-    <div id="searchDropdown" class="search-dropdown"></div>
-    <div id="noResults" class="no-results">Нічого не знайдено</div>
-</div>
 
-<div class="hero-meta">
-    <span>Артилерія</span>
-    <span>Міномети</span>
-    <span>Стрілецьке озброєння</span>
-    <span>Гранати</span>
-    <span>Інженерні боєприпаси</span>
-    <span>Ракетні комплекси</span>
-    <span>ППО</span>
-    <span>БпЛА</span>
-    <span>Авіаційні боєприпаси</span>
-</div>
-
+        <div class="hero-meta">
+            <span>Артилерія</span>
+            <span>Міномети</span>
+            <span>Стрілецька зброя</span>
+            <span>Гранати</span>
+            <span>Інженерні боєприпаси</span>
+            <span>Ракетні комплекси</span>
+            <span>ППО</span>
+            <span>БпЛА</span>
+            <span>Авіаційні боєприпаси</span>
+        </div>
+    </div>
 </section>
+
 <!-- ПРО СЛУЖБУ -->
 <section id="sec-about">
-    <h2 class="section-title">Основне призначення</h2>
+    <h2 class="section-title">Основне призначення засобів ураження</h2>
     <p class="section-text">
         Засоби ураження — це різні види озброєння, боєприпасів та спеціальних засобів,
-        призначених для знищення, ураження або виведення з ладу живої сили, 
-        техніки, інженерних споруд і об’єктів противника.
+        призначених для знищення, ураження або виведення з ладу живої сили, техніки,
+        інженерних споруд і об’єктів противника.
         <br><br>
-        До їх основних призначень належить:
-        <br><br>
-        1. Забезпечення виконання бойових завдань
-        створення необхідного рівня вогневого впливу на противника;
-        <br><br>
-        2. Підтримка наступальних і оборонних дій підрозділів;
-        <br><br>
-        3. Ураження важливих об’єктів противника на визначених дистанціях.
-        <br><br>
-        4. Підсилення бойових можливостей підрозділів<br>
-        збільшення дальності, точності й ефективності ураження;
-        <br><br>
-        5. Забезпечення різних типів дій — від точкового знищення до площинного впливу.
-        <br><br>
-        6. Вогневе прикриття та стримування противника<br>
-        подавлення вогневих точок, техніки, безпілотників;
-        <br><br>
-        7. Стримування наступу або перешкоджання маневрам противника.
-        <br><br>
-        8. Порушення логістики та управління противника
-        ураження складів, пунктів управління, комунікацій, інженерних споруд;
-        <br><br>
-        9. Виведення з ладу його систем забезпечення.
+        Вони забезпечують виконання бойових завдань, підтримку наступальних і оборонних дій,
+        створення необхідного рівня вогневого впливу, порушення логістики та систем управління противника.
     </p>
 </section>
-<!-- БОЄПРИПАСИ -->
-<section id="sec-bp">
-    <h2 class="section-title">Боєприпаси</h2>
-<p class="section-text">
-Боєприпаси (англ. ammunition) — складова частина озброєння, 
-    безпосередньо призначена для враження живої сили противника, знищення його військової техніки, 
-    руйнування укріплень, споруд, а також виконання інших завдань (освітлення місцевості, задимлення, 
-    розкидання агітаційної літератури тощо).
-</p>
 
+<!-- КАТЕГОРІЇ -->
+<section id="sec-cats">
+    <h2 class="section-title">Розділи порталу</h2>
+    <p class="section-text">
+        Для зручності уся інформація розділена на окремі блоки. Обери потрібну категорію, щоб
+        перейти до повного переліку з картками, фото, характеристиками та описом.
+    </p>
 
-    <!-- СЮДИ JS ПІДСТАВЛЯЄ КАРТКИ З Firestore (type="bp") -->
-    <div id="weapons-bp" class="cards-grid"></div>
-</section>
-<!-- РАКЕТНІ КОМПЛЕКСИ -->
-<section id="sec-rk">
-    <h2 class="section-title">Ракетні комплекси</h2>
-    <p class="section-text">
-        Ракетний комплекс (скор. — РК) — сукупність функціонально і технологічно 
-        взаємопов'язаних ракет конкретного типу, технічних засобів і споруд, 
-        призначених для підтримки їх в готовності до застосування, пуску ракет, 
-        управління їх польотом і виконання інших завдань (наприклад, захисту ракети від впливу 
-        вражаючих факторів зброї противника). РК включає балістичні або крилаті ракети з 
-        ядерним або звичайним зарядом і спеціальне обладнання (наземне, корабельне, авіаційне).
-    </p>
-    <!-- type="rk" -->
-    <div id="weapons-rk" class="cards-grid"></div>
-</section>
-<!-- ПРОТИПОВІТРЯНА ОБОРОНА -->
-<section id="sec-pvo">
-    <h2 class="section-title">ППО</h2>
-    <p class="section-text">
-        Протипові́тряна оборо́на (ППО) — сукупність засобів, організаційних заходів 
-        та бойових дій, які спрямовані на відбиття ворожих ударів з повітря, 
-        прикриття власних угрупувань наземних військ або важливих об'єктів у тилу. 
-        Військова ППО перешкоджає завоюванню й утриманню панування в повітрі ворожими 
-        літальними об'єктами. Вона здійснюється на всіх етапах та в усіх видах бою, 
-        під час пересування військ та під час їхнього постійного розташування.
-    </p>
-    <!-- type="pvo" -->
-    <div id="weapons-pvo" class="cards-grid"></div>
-</section>
-<!-- БпЛА -->
-<section id="sec-uav">
-    <h2 class="section-title">БпЛА</h2>
-    <p class="section-text">
-        Безпілотний літальний апарат (БпЛА) — повітряне судно, призначене для 
-        виконання польоту без пілота на борту, керування польотом якого і контроль 
-        за яким здійснюються відповідною програмою або за допомогою спеціальної 
-        станції керування, що знаходиться поза повітряним судном.
-    </p>
-    <!-- type="uav" -->
-    <div id="weapons-uav" class="cards-grid"></div>
+    <div class="categories-grid">
+        <div class="cat-card" data-link="ammo.html">
+            <h3>Боєприпаси</h3>
+            <p>Снаряди, міни, патрони, інженерні заряди та інші типи боєприпасів.</p>
+        </div>
+        <div class="cat-card" data-link="rockets.html">
+            <h3>Ракетні комплекси</h3>
+            <p>Оперативно-тактичні, протитанкові, зенітні ракетні комплекси.</p>
+        </div>
+        <div class="cat-card" data-link="pvo.html">
+            <h3>ППО</h3>
+            <p>Засоби протиповітряної оборони та боротьби з повітряними цілями.</p>
+        </div>
+        <div class="cat-card" data-link="uav.html">
+            <h3>БпЛА</h3>
+            <p>Розвідувальні, ударні, коригувальні й спеціальні безпілотні системи.</p>
+        </div>
+    </div>
 </section>
 
 <footer>
@@ -893,339 +449,59 @@ mark {
     </a>
 </footer>
 
-<!-- ===== JS + FIREBASE (MODULE) ===== -->
-<script type="module">
+<script>
+    // HUD меню
+    const burger = document.getElementById('hudBurger');
+    const menu   = document.getElementById('hudMenu');
 
-/* ============================================================================
-    HUD BURGER MENU
-============================================================================ */
-const burger = document.getElementById('hudBurger');
-const menu   = document.getElementById('hudMenu');
-
-burger.addEventListener('click', () => {
-    burger.classList.toggle('active');
-    menu.classList.toggle('visible');
-});
-
-menu.querySelectorAll('button[data-target]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const id = btn.getAttribute('data-target');
-        const el = document.getElementById(id);
-        if (el) {
-            window.scrollTo({
-                top: el.offsetTop - 60,
-                behavior: 'smooth'
-            });
-        }
-        burger.classList.remove('active');
-        menu.classList.remove('visible');
+    burger.addEventListener('click', () => {
+        burger.classList.toggle('active');
+        menu.classList.toggle('visible');
     });
-});
 
+    menu.querySelectorAll('button[data-link]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const link = btn.getAttribute('data-link');
+            if (link) {
+                window.location.href = link;
+            }
+        });
+    });
 
-/* ============================================================================
-    3D PARALLAX HERO
-============================================================================ */
-const heroParallax = document.getElementById('heroParallax');
+    // кліки по картках категорій
+    document.querySelectorAll('.cat-card[data-link]').forEach(card => {
+        card.addEventListener('click', () => {
+            const link = card.getAttribute('data-link');
+            if (link) window.location.href = link;
+        });
+    });
 
-function applyParallax(xNorm, yNorm) {
-    heroParallax.style.transform =
-        `translate3d(${xNorm * 18}px, ${yNorm * 18}px, 0)
-         rotateX(${yNorm * 6}deg)
-         rotateY(${-xNorm * 6}deg)`;
-}
+    // Паралакс
+    const heroParallax = document.getElementById('heroParallax');
 
-if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', (event) => {
-        let xNorm = (event.gamma || 0) / 45;
-        let yNorm = (event.beta  || 0) / 45;
-        xNorm = Math.max(-1, Math.min(1, xNorm));
-        yNorm = Math.max(-1, Math.min(1, yNorm));
+    function applyParallax(xNorm, yNorm) {
+        heroParallax.style.transform =
+            `translate3d(${xNorm * 18}px, ${yNorm * 18}px, 0)
+             rotateX(${yNorm * 6}deg)
+             rotateY(${-xNorm * 6}deg)`;
+    }
+
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (event) => {
+            let xNorm = (event.gamma || 0) / 45;
+            let yNorm = (event.beta  || 0) / 45;
+            xNorm = Math.max(-1, Math.min(1, xNorm));
+            yNorm = Math.max(-1, Math.min(1, yNorm));
+            applyParallax(xNorm, yNorm);
+        });
+    }
+
+    window.addEventListener('mousemove', e => {
+        const xNorm = (e.clientX / window.innerWidth  - 0.5) * 2;
+        const yNorm = (e.clientY / window.innerHeight - 0.5) * 2;
         applyParallax(xNorm, yNorm);
     });
-}
-
-window.addEventListener('mousemove', e => {
-    const xNorm = (e.clientX / window.innerWidth  - 0.5) * 2;
-    const yNorm = (e.clientY / window.innerHeight - 0.5) * 2;
-    applyParallax(xNorm, yNorm);
-});
-
-
-/* ============================================================================
-    FIREBASE + FIRESTORE
-============================================================================ */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import {
-    getFirestore,
-    collection,
-    getDocs,
-    query,
-    orderBy
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
-  authDomain: "rooot-71962.firebaseapp.com",
-  projectId: "rooot-71962",
-  storageBucket: "rooot-71962.firebasestorage.app",
-  messagingSenderId: "718921321052",
-  appId: "1:718921321052:web:614928382d93d2b50eb499"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-
-/* ============================================================================
-    РЕНДЕР ДАНИХ
-============================================================================ */
-function renderWeapons(list) {
-    const sectors = {
-        bp:  document.getElementById("weapons-bp"),
-        rk:  document.getElementById("weapons-rk"),
-        pvo: document.getElementById("weapons-pvo"),
-        uav: document.getElementById("weapons-uav")
-    };
-
-    list.forEach(item => {
-        if (!sectors[item.type]) return;
-
-        const card = document.createElement("div");
-        card.className = "weapon-card";
-
-        card.innerHTML = `
-            <img class="weapon-image" src="${item.img}">
-            <div class="weapon-body">
-                <div class="weapon-name">${item.name}</div>
-            </div>
-        `;
-
-        // прикріпити відкриття модалки
-        card.addEventListener("click", () => openModal(item));
-
-        sectors[item.type].appendChild(card);
-    });
-}
-
-/* ===== МОДАЛЬНЕ ВІКНО ===== */
-const modal = document.getElementById("weaponModal");
-const modalImg = document.getElementById("modalImg");
-const modalName = document.getElementById("modalName");
-const modalRange = document.getElementById("modalRange");
-const modalDesc = document.getElementById("modalDesc");
-
-function openModal(item) {
-    modalImg.src = item.img;
-    modalName.textContent = item.name;
-    modalDesc.textContent = item.desc;
-
-// item.specs = масив характеристик
-modalSpecs.innerHTML = "";
-if (item.specs) {
-    item.specs.forEach(s => {
-        modalSpecs.innerHTML += `<li>${s}</li>`;
-    });
-}
-
-
-    modal.classList.remove("hidden");
-}
-
-document.querySelector(".modal-close").addEventListener("click", () => {
-    modal.classList.add("hidden");
-});
-
-modal.addEventListener("click", e => {
-    if (e.target === modal) modal.classList.add("hidden");
-});
-
-
-function renderDaily(list) {
-    const box = document.getElementById("daily-container");
-    box.innerHTML = "";
-
-    list.forEach(item => {
-        box.innerHTML += `
-        <article class="daily-entry">
-            <h4>${item.title}</h4>
-            <time>${item.date}</time>
-            <div class="daily-body">
-                <img src="${item.img}">
-                <div class="daily-text">${item.text}</div>
-            </div>
-        </article>`;
-    });
-}
-
-
-/* ============================================================================
-    ЗАВАНТАЖЕННЯ З FIRESTORE
-============================================================================ */
-async function loadData() {
-    try {
-        const qW = query(collection(db, "weapons"), orderBy("name"));
-        const snapW = await getDocs(qW);
-        const weapons = snapW.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderWeapons(weapons);
-
-        const qD = query(collection(db, "daily"), orderBy("date", "desc"));
-        const snapD = await getDocs(qD);
-        const daily = snapD.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderDaily(daily);
-
-    } catch (e) {
-        console.error("Помилка Firestore:", e);
-    }
-}
-
-loadData();
-
-// ========= ПОШУК З ВИПАДАЮЧИМ СПИСКОМ =========
-
-const searchInput = document.getElementById("searchInput");
-const dropdown = document.getElementById("searchDropdown");
-const noResults = document.getElementById("noResults");
-
-searchInput.addEventListener("input", () => {
-    const q = searchInput.value.toLowerCase().trim();
-
-    dropdown.innerHTML = "";
-    dropdown.style.display = "none";
-    noResults.style.display = "none";
-
-    if (q === "") return;
-
-    const cards = Array.from(document.querySelectorAll(".weapon-card"));
-
-    // *** Пошук тільки по назві ***
-    const results = cards
-        .map(card => ({
-            name: card.querySelector(".weapon-name").innerText,
-            element: card
-        }))
-        .filter(item => item.name.toLowerCase().includes(q));
-
-    if (results.length === 0) {
-        noResults.style.display = "block";
-        return;
-    }
-
-    dropdown.style.display = "block";
-
-    results.slice(0, 12).forEach(item => {
-        const div = document.createElement("div");
-        div.className = "search-item";
-
-        // Підсвітка тільки в назві
-        const highlighted = item.name.replace(
-            new RegExp(q, "gi"),
-            match => `<mark>${match}</mark>`
-        );
-
-        div.innerHTML = highlighted;
-
-        div.addEventListener("click", () => {
-            dropdown.style.display = "none";
-            searchInput.value = item.name;
-
-            item.element.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-
-            item.element.style.boxShadow = "0 0 25px rgba(255,39,39,1)";
-            setTimeout(() => item.element.style.boxShadow = "", 900);
-        });
-
-        dropdown.appendChild(div);
-    });
-});
-
-// Закриття списку
-document.addEventListener("click", e => {
-    if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.style.display = "none";
-    }
-});
-function applySearchFilter() {
-    const q = searchInput.value.toLowerCase().trim();
-    let shown = 0;
-
-    cachedCards.forEach(card => {
-        const nameEl = card.querySelector(".weapon-name");
-        const descEl = card.querySelector(".weapon-desc");
-
-        const name = nameEl.innerText.toLowerCase();
-
-        if (name.includes(q)) {
-            card.style.display = "";
-            shown++;
-
-            nameEl.innerHTML = highlight(nameEl.innerText, q);
-            descEl.innerHTML = descEl.innerText; // не чіпаємо опис
-        } else {
-            card.style.display = "none";
-            nameEl.innerHTML = nameEl.innerText;
-            descEl.innerHTML = descEl.innerText;
-        }
-    });
-
-    noResults.style.display = (shown === 0 && q !== "") ? "block" : "none";
-}
 </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

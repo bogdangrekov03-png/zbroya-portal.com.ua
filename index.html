@@ -615,6 +615,36 @@ mark {
     line-height: 1.5;
     color: #e5e5e5;
 }
+/* ===== Блоки опису / характеристик ===== */
+
+.info-block {
+    border: 1px solid rgba(255,39,39,0.45);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    background: rgba(10,0,0,0.55);
+    box-shadow: 0 0 12px rgba(255,0,0,0.25);
+}
+
+.info-block h3 {
+    font-size: 15px;
+    text-transform: uppercase;
+    color: #ff5757;
+    margin-bottom: 8px;
+    text-shadow: 0 0 6px rgba(255,39,39,0.8);
+}
+
+.info-block p,
+.info-block li {
+    font-size: 14px;
+    line-height: 1.55;
+    color: #e8e8e8;
+}
+
+.info-block ul {
+    margin-left: 14px;
+    margin-top: 6px;
+}
 
 
 </style>
@@ -632,9 +662,18 @@ mark {
         </div>
 
         <div class="modal-scroll">
-            <h2 id="modalName"></h2>
-            <p id="modalRange" class="modal-range"></p>
-            <p id="modalDesc" class="modal-desc"></p>
+          <h2 id="modalName"></h2>
+
+<div class="info-block">
+    <h3>ОПИС</h3>
+    <p id="modalDesc"></p>
+</div>
+
+<div class="info-block">
+    <h3>ХАРАКТЕРИСТИКИ</h3>
+    <ul id="modalSpecs"></ul>
+</div>
+
         </div>
 
     </div>
@@ -920,8 +959,16 @@ const modalDesc = document.getElementById("modalDesc");
 function openModal(item) {
     modalImg.src = item.img;
     modalName.textContent = item.name;
-    modalRange.textContent = item.range;
     modalDesc.textContent = item.desc;
+
+// item.specs = масив характеристик
+modalSpecs.innerHTML = "";
+if (item.specs) {
+    item.specs.forEach(s => {
+        modalSpecs.innerHTML += `<li>${s}</li>`;
+    });
+}
+
 
     modal.classList.remove("hidden");
 }
@@ -1070,6 +1117,7 @@ function applySearchFilter() {
 </script>
 </body>
 </html>
+
 
 
 

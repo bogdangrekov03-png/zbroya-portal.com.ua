@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Служба засобів ураження</title>
+
+<style>
+    :root {
+        --bg-main: #020204;
+        --bg-card: #0b0b0f;
+        --accent: #ff2727;
+        --accent-soft: #ff5757;
+        --border-glow: 0 0 18px rgba(255, 39, 39, 0.7);
+        --text-main: #f5f5f5;
+        --text-muted: #b8b8b8;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: radial-gradient(circle at top, #220000 0%, #020204 45%, #000000 100%);
+        color: var(--text-main);
+        overflow-x: hidden;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    /* ===== HUD НАВІГАЦІЯ ===== */
+    .hud-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 50;
+        backdrop-filter: blur(10px);
+        background: linear-gradient(90deg, rgba(0,0,0,0.94), rgba(40,0,0,0.9));
+        border-bottom: 1px solid rgba(255, 39, 39, 0.5);
+        box-shadow: 0 0 20px rgba(255, 39, 39, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 14px;
+    }
+
+    .hud-logo {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .hud-logo-main {
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent-soft);
+    }
+
+    .hud-logo-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    .hud-burger {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 39, 39, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(255,39,39,0.7);
+    }
+
+    .hud-burger span {
+        position: relative;
+        width: 18px;
+        height: 2px;
+        background: var(--accent);
+        border-radius: 999px;
+        transition: 0.25s;
+    }
+    .hud-burger::before,
+    .hud-burger::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 2px;
+        background: var(--accent);
+        border-radius: 999px;
+        transition: 0.25s;
+    }
+    .hud-burger::before {
+        transform: translateY(-6px);
+    }
+    .hud-burger::after {
+        transform: translateY(6px);
+    }
+
+    .hud-burger.active span {
+        opacity: 0;
+    }
+    .hud-burger.active::before {
+        transform: rotate(45deg);
+    }
+    .hud-burger.active::after {
+        transform: rotate(-45deg);
+    }
+
+    .hud-menu {
+        position: fixed;
+        top: 50px;
+        right: 10px;
+        z-index: 40;
+        width: 220px;
+        max-width: calc(100% - 20px);
+        background: radial-gradient(circle at top, #3b0000 0%, #050507 45%, #000000 100%);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 39, 39, 0.7);
+        box-shadow: 0 0 28px rgba(255,39,39,0.7);
+        padding: 12px;
+        opacity: 0;
+        transform: translateY(-10px) scale(0.97);
+        pointer-events: none;
+        transition: 0.22s;
+    }
+
+    .hud-menu.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    .hud-menu h4 {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .hud-menu ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .hud-menu li button {
+        width: 100%;
+        background: linear-gradient(90deg, #150000, #2a0000);
+        color: var(--text-main);
+        border-radius: 9px;
+        padding: 7px 10px;
+        border: 1px solid rgba(255,39,39,0.7);
+        font-size: 13px;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.18s;
+    }
+
+    .hud-menu li button span {
+        font-size: 10px;
+        color: var(--text-muted);
+    }
+
+    .hud-menu li button:hover {
+        background: linear-gradient(90deg, #360000, #550000);
+        box-shadow: 0 0 18px rgba(255,39,39,0.8);
+    }
+
+    /* ===== HERO з 3D ПАРАЛАКСОМ ===== */
+    .hero {
+        margin-top: 52px;
+        position: relative;
+        padding: 80px 18px 72px;
+        overflow: hidden;
+    }
+
+    .hero-parallax {
+        position: absolute;
+        inset: -40px;
+        background:
+            radial-gradient(circle at 20% 0%, rgba(255, 39, 39, 0.22), transparent 55%),
+            radial-gradient(circle at 90% 100%, rgba(255, 120, 80, 0.16), transparent 60%),
+            radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.08), transparent 70%);
+        mix-blend-mode: screen;
+        pointer-events: none;
+        transform-style: preserve-3d;
+        transition: transform 0.08s linear;
+    }
+
+    .hero-inner {
+        position: relative;
+        z-index: 2;
+        text-align: left;
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--accent-soft);
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,39,39,0.7);
+        background: rgba(0,0,0,0.8);
+        box-shadow: var(--border-glow);
+        margin-bottom: 14px;
+    }
+
+    .hero-title {
+        font-size: 26px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-shadow: 0 0 18px rgba(255,39,39,0.9);
+        margin-bottom: 10px;
+    }
+
+    .hero-sub {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 22px;
+    }
+
+    .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .hero-meta span {
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,39,39,0.6);
+        background: rgba(3,3,5,0.9);
+    }
+
+    /* ===== РОЗДІЛИ ===== */
+    section {
+        padding: 32px 18px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        font-size: 20px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        color: var(--accent-soft);
+        text-shadow: 0 0 12px rgba(255,39,39,0.9);
+    }
+
+    .section-text {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 18px;
+    }
+
+    /* ===== КАРТКИ ЗАСОБІВ ===== */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .weapon-card {
+        background: var(--bg-card);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 39, 39, 0.6);
+        box-shadow: 0 0 18px rgba(255, 39, 39, 0.5);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .weapon-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,0,0,0.08), transparent 40%);
+        mix-blend-mode: screen;
+        pointer-events: none;
+    }
+
+    .weapon-image {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        filter: contrast(1.2) brightness(.85);
+    }
+
+    .weapon-body {
+        padding: 14px 14px 12px;
+    }
+
+    .weapon-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .weapon-name {
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .weapon-tag {
+        font-size: 10px;
+        text-transform: uppercase;
+        padding: 3px 7px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 39, 39, 0.8);
+        color: var(--accent-soft);
+    }
+
+    .weapon-meta {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .weapon-meta span {
+        margin-right: 10px;
+    }
+
+    .weapon-desc {
+        font-size: 13px;
+        color: #dddddd;
+        line-height: 1.5;
+    }
+
+    @media (min-width: 700px) {
+        .cards-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    /* ===== ЩОДЕННІ ОНОВЛЕННЯ (ТВОЇ ФОТО) ===== */
+    .daily-note {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+    }
+
+    .daily-entry {
+        background: radial-gradient(circle at top, #220000 0%, #050506 40%, #000000 100%);
+        border-radius: 14px;
+        border: 1px dashed rgba(255,39,39,0.7);
+        padding: 14px;
+        margin-bottom: 12px;
+        box-shadow: 0 0 16px rgba(255,39,39,0.45);
+    }
+
+    .daily-entry h4 {
+        font-size: 14px;
+        margin-bottom: 4px;
+        color: var(--accent-soft);
+    }
+
+    .daily-entry time {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    .daily-body {
+        margin-top: 8px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .daily-body img {
+        width: 96px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(255,39,39,0.7);
+    }
+
+    .daily-text {
+        font-size: 13px;
+        line-height: 1.5;
+        color: #e0e0e0;
+    }
+
+    @media (max-width: 420px) {
+        .daily-body {
+            flex-direction: column;
+        }
+        .daily-body img {
+            width: 100%;
+            height: 160px;
+        }
+    }
+
+    footer {
+        padding: 26px 18px 34px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+</style>
+</head>
+<body>
+
+<!-- HUD НАВІГАЦІЯ -->
+<div class="hud-nav">
+    <div class="hud-logo">
+        <div class="hud-logo-main">Служба засобів ураження</div>
+        <div class="hud-logo-sub">інформаційний тактичний портал</div>
+    </div>
+    <div class="hud-burger" id="hudBurger">
+        <span></span>
+    </div>
+
+    <div class="hud-menu" id="hudMenu">
+        <h4>Розділи</h4>
+        <ul>
+            <li><button data-target="sec-bp">Боєприпаси <span>снаряди, міни</span></button></li>
+            <li><button data-target="sec-rk">Ракетні комплекси <span>ОТРК, РСЗВ</span></button></li>
+            <li><button data-target="sec-pvo">Протиповітряна оборона <span>зенітні системи</span></button></li>
+            <li><button data-target="sec-uav">Дрони <span>розвідка й удар</span></button></li>
+            <li><button data-target="sec-daily">Щоденні фото <span>твій щоденник</span></button></li>
+        </ul>
+    </div>
+</div>
+
+<!-- HERO З ПАРАЛАКСОМ -->
+<section class="hero">
+    <div class="hero-parallax" id="heroParallax"></div>
+
+    <div class="hero-inner">
+        <div class="hero-badge">
+            • тактичний огляд • бойовий екшн •
+        </div>
+        <h1 class="hero-title">Служба засобів ураження</h1>
+        <p class="hero-sub">
+            Інформаційна сторінка про основні засоби ураження, їх завдання, 
+            застосування та сучасні підходи до обліку і використання.
+        </p>
+        <div class="hero-meta">
+            <span>Боєприпаси</span>
+            <span>Ракетні комплекси</span>
+            <span>ППО</span>
+            <span>Дрони</span>
+        </div>
+    </div>
+</section>
+
+<!-- ПРО СЛУЖБУ -->
+<section id="sec-about">
+    <h2 class="section-title">Призначення служби</h2>
+    <p class="section-text">
+        Служба засобів ураження забезпечує планування, облік, зберігання, 
+        видачу й аналіз застосування боєприпасів, ракет, дронів та інших засобів. 
+        Її завдання — щоб у потрібний момент у підрозділу були саме ті засоби, 
+        у потрібній кількості та стані, із правильним документальним супроводом.
+    </p>
+</section>
+
+<!-- БОЄПРИПАСИ -->
+<section id="sec-bp">
+    <h2 class="section-title">Боєприпаси</h2>
+    <p class="section-text">
+        Боєприпаси — це основа вогневого ураження: від стрілецьких патронів до 
+        важких артилерійських снарядів і інженерних зарядів. Важливі параметри — 
+        калібр, тип заряду, призначення, категорія зберігання і технічний стан.
+    </p>
+
+    <!-- СЮДИ JS ПІДСТАВЛЯЄ КАРТКИ З Firestore (type="bp") -->
+    <div id="weapons-bp" class="cards-grid"></div>
+</section>
+
+<!-- РАКЕТНІ КОМПЛЕКСИ -->
+<section id="sec-rk">
+    <h2 class="section-title">Ракетні комплекси</h2>
+    <p class="section-text">
+        Ракетні комплекси забезпечують ураження на великих дистанціях: від 
+        тактичних ракет до реактивних систем залпового вогню. Вони вимагають 
+        точного планування, обліку та логістики.
+    </p>
+
+    <!-- type="rk" -->
+    <div id="weapons-rk" class="cards-grid"></div>
+</section>
+
+<!-- ПРОТИПОВІТРЯНА ОБОРОНА -->
+<section id="sec-pvo">
+    <h2 class="section-title">Протиповітряна оборона</h2>
+    <p class="section-text">
+        ППО прикриває війська та об’єкти від літаків, вертольотів, БПЛА, крилатих 
+        і балістичних ракет. Облік засобів ППО критичний для забезпечення постійної 
+        боєготовності й своєчасного перезарядження.
+    </p>
+
+    <!-- type="pvo" -->
+    <div id="weapons-pvo" class="cards-grid"></div>
+</section>
+
+<!-- ДРОНИ -->
+<section id="sec-uav">
+    <h2 class="section-title">Дрони</h2>
+    <p class="section-text">
+        Безпілотні системи стали одним із ключових засобів ураження та розвідки. 
+        Вони дають можливість спостерігати, коригувати артилерію та наносити 
+        точкові удари з мінімальним ризиком для особового складу.
+    </p>
+
+    <!-- type="uav" -->
+    <div id="weapons-uav" class="cards-grid"></div>
+</section>
+
+<!-- ЩОДЕННІ ОНОВЛЕННЯ (ТВОЇ ФОТО + ОПИС) -->
+<section id="sec-daily">
+    <h2 class="section-title">Щоденні оновлення (твої фото)</h2>
+    <p class="daily-note">
+        Контент тут оновлюється щодня <b> </b>.
+    </p>
+
+    <div id="daily-container"></div>
+</section>
+
+<footer>
+    © 2025 Служба засобів ураження • тактичний інформаційний портал
+</footer>
+
+<!-- ===== JS + FIREBASE (MODULE) ===== -->
+<script type="module">
+    // ===== HUD BURGER + МЕНЮ =====
+    const burger = document.getElementById('hudBurger');
+    const menu = document.getElementById('hudMenu');
+
+    burger.addEventListener('click', () => {
+        burger.classList.toggle('active');
+        menu.classList.toggle('visible');
+    });
+
+    menu.querySelectorAll('button[data-target]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-target');
+            const el = document.getElementById(id);
+            if (el) {
+                window.scrollTo({
+                    top: el.offsetTop - 60,
+                    behavior: 'smooth'
+                });
+            }
+            burger.classList.remove('active');
+            menu.classList.remove('visible');
+        });
+    });
+
+    // ===== 3D ПАРАЛАКС HERO =====
+    const heroParallax = document.getElementById('heroParallax');
+
+    function applyParallax(xNorm, yNorm) {
+        const rotateX = yNorm * 6;
+        const rotateY = -xNorm * 6;
+        const moveX = xNorm * 18;
+        const moveY = yNorm * 18;
+
+        heroParallax.style.transform =
+            `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }
+
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (event) => {
+            const beta = event.beta || 0;
+            const gamma = event.gamma || 0;
+
+            let xNorm = gamma / 45;
+            let yNorm = beta / 45;
+
+            xNorm = Math.max(-1, Math.min(1, xNorm));
+            yNorm = Math.max(-1, Math.min(1, yNorm));
+
+            applyParallax(xNorm, yNorm);
+        });
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        const xNorm = (x - 0.5) * 2;
+        const yNorm = (y - 0.5) * 2;
+        applyParallax(xNorm, yNorm);
+    });
+
+    // ===== FIREBASE IMPORTS =====
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+        getFirestore,
+        collection,
+        getDocs,
+        query,
+        orderBy
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // ===== ТВОЯ КОНФІГУРАЦІЯ =====
+    const firebaseConfig = {
+      apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
+      authDomain: "rooot-71962.firebaseapp.com",
+      projectId: "rooot-71962",
+      storageBucket: "rooot-71962.firebasestorage.app",
+      messagingSenderId: "718921321052",
+      appId: "1:718921321052:web:614928382d93d2b50eb499"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    async function loadData() {
+        try {
+            // weapons
+            const qWeapons = query(collection(db, "weapons"), orderBy("name"));
+            const snapW = await getDocs(qWeapons);
+            const weapons = [];
+            snapW.forEach(doc => weapons.push({ id: doc.id, ...doc.data() }));
+            renderWeapons(weapons);
+
+            // daily
+            const qDaily = query(collection(db, "daily"), orderBy("date", "desc"));
+            const snapD = await getDocs(qDaily);
+            const daily = [];
+            snapD.forEach(doc => daily.push({ id: doc.id, ...doc.data() }));
+            renderDaily(daily);
+
+        } catch (err) {
+            console.error("Помилка завантаження з Firestore:", err);
+        }
+    }
+
+    function renderWeapons(list) {
+        const sectors = {
+            bp:  document.getElementById("weapons-bp"),
+            rk:  document.getElementById("weapons-rk"),
+            pvo: document.getElementById("weapons-pvo"),
+            uav: document.getElementById("weapons-uav")
+        };
+
+        list.forEach(item => {
+            if (!sectors[item.type]) return;
+
+            const block = `
+            <article class="weapon-card">
+                <img class="weapon-image" src="${item.img || ""}" alt="">
+                <div class="weapon-body">
+                    <div class="weapon-header">
+                        <div class="weapon-name">${item.name || ""}</div>
+                        <div class="weapon-tag">${item.tag || ""}</div>
+                    </div>
+                    <div class="weapon-meta">
+                        <span>${item.range || ""}</span>
+                    </div>
+                    <div class="weapon-desc">${item.desc || ""}</div>
+                </div>
+            </article>`;
+
+            sectors[item.type].innerHTML += block;
+        });
+    }
+
+    function renderDaily(list) {
+        const box = document.getElementById("daily-container");
+        box.innerHTML = "";
+
+        list.forEach(item => {
+            const entry = `
+            <article class="daily-entry">
+                <h4>${item.title || ""}</h4>
+                <time>${item.date || ""}</time>
+                <div class="daily-body">
+                    <img src="${item.img || ""}" alt="">
+                    <div class="daily-text">${item.text || ""}</div>
+                </div>
+            </article>`;
+            box.innerHTML += entry;
+        });
+    }
+
+    loadData();
+</script>
+
+</body>
+</html>

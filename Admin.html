@@ -1,0 +1,418 @@
+ <!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Адмін-панель СЗУ</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #000;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        text-shadow: 0 0 15px red;
+    }
+    .card {
+        max-width: 900px;
+        margin: 0 auto 20px;
+        background: #0b0b0f;
+        border-radius: 14px;
+        border: 1px solid rgba(255,39,39,0.7);
+        box-shadow: 0 0 20px rgba(255,0,0,0.6);
+        padding: 18px;
+    }
+    label {
+        display: block;
+        margin-top: 8px;
+        font-size: 13px;
+        opacity: 0.9;
+    }
+    input, textarea, select {
+        width: 100%;
+        margin-top: 4px;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,39,39,0.6);
+        background: #111;
+        color: #fff;
+        font-size: 14px;
+    }
+    textarea {
+        min-height: 70px;
+        resize: vertical;
+    }
+    button {
+        margin-top: 12px;
+        padding: 9px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background: #ff2727;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 0 14px rgba(255,0,0,0.7);
+    }
+    button:hover {
+        background: #e00000;
+    }
+
+    .hidden { display: none; }
+
+    .items-list {
+        margin-top: 12px;
+    }
+    .item-row {
+        padding: 10px;
+        border-radius: 10px;
+        background: #111;
+        border: 1px solid rgba(255,39,39,0.4);
+        margin-bottom: 8px;
+        font-size: 13px;
+    }
+    .item-row h4 {
+        margin: 0 0 4px;
+        font-size: 14px;
+        color: #ff5757;
+    }
+    .item-row small {
+        opacity: 0.7;
+    }
+    .item-actions {
+        margin-top: 6px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .btn-small {
+        padding: 4px 10px;
+        font-size: 12px;
+        border-radius: 999px;
+        box-shadow: none;
+    }
+    .btn-danger {
+        background: #d00000;
+    }
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .top-bar span {
+        font-size: 13px;
+        opacity: 0.8;
+    }
+</style>
+</head>
+<body>
+
+<h1>Адмін-панель СЗУ</h1>
+
+<!-- ЛОГІН -->
+<div id="loginBox" class="card">
+    <h2>Вхід адміністратора</h2>
+    <label>Email</label>
+    <input id="loginEmail" type="email" placeholder="admin@example.com" />
+    <label>Пароль</label>
+    <input id="loginPass" type="password" placeholder="Пароль" />
+    <button id="btnLogin">Увійти</button>
+    <p style="font-size:12px;opacity:.7;margin-top:8px;">
+        Створи цього користувача в Firebase → Authentication → Email/Password.
+    </p>
+</div>
+
+<!-- АДМІН-ПАНЕЛЬ -->
+<div id="adminPanel" class="hidden">
+
+    <div class="card">
+        <div class="top-bar">
+            <span id="userInfo"></span>
+            <button id="btnLogout" class="btn-small">Вийти</button>
+        </div>
+        <p style="font-size:13px;opacity:.8;">
+            Тут ти додаєш дані, які з'являються на публічній сторінці
+            <b>index.html</b> в режимі реального часу (через Firestore).
+        </p>
+    </div>
+
+    <!-- Додати засіб ураження -->
+    <div class="card">
+        <h2>Додати / оновити засіб ураження</h2>
+        <label>Назва</label>
+        <input id="w_name" />
+
+        <label>Категорія</label>
+        <select id="w_type">
+            <option value="bp">Боєприпаси</option>
+            <option value="rk">Ракетні комплекси</option>
+            <option value="pvo">ППО</option>
+            <option value="uav">Дрони</option>
+        </select>
+
+        <label>Тег (коротко, наприклад: артилерія, РСЗВ)</label>
+        <input id="w_tag" />
+
+        <label>Характеристики / дальність</label>
+        <input id="w_range" />
+
+        <label>Опис</label>
+        <textarea id="w_desc"></textarea>
+
+        <label>URL фото (або посилання на зображення)</label>
+        <input id="w_img" />
+
+        <button id="btnAddWeapon">Зберегти засіб</button>
+    </div>
+
+    <!-- Додати щоденне оновлення -->
+    <div class="card">
+        <h2>Додати щоденне оновлення</h2>
+
+        <label>Заголовок</label>
+        <input id="d_title" />
+
+        <label>Дата (текстом, наприклад 29.11.2025)</label>
+        <input id="d_date" />
+
+        <label>Опис</label>
+        <textarea id="d_text"></textarea>
+
+        <label>URL фото</label>
+        <input id="d_img" />
+
+        <button id="btnAddDaily">Зберегти оновлення</button>
+    </div>
+
+    <!-- Список зброї -->
+    <div class="card">
+        <h2>Усі засоби ураження</h2>
+        <div id="weaponsList" class="items-list"></div>
+    </div>
+
+    <!-- Список щоденних оновлень -->
+    <div class="card">
+        <h2>Усі щоденні оновлення</h2>
+        <div id="dailyList" class="items-list"></div>
+    </div>
+
+</div>
+
+<script type="module">
+    // ==== Firebase imports ====
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        deleteDoc,
+        doc,
+        updateDoc,
+        query,
+        orderBy
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    import {
+        getAuth,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // ==== Твій config ====
+    const firebaseConfig = {
+      apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
+      authDomain: "rooot-71962.firebaseapp.com",
+      projectId: "rooot-71962",
+      storageBucket: "rooot-71962.firebasestorage.app",
+      messagingSenderId: "718921321052",
+      appId: "1:718921321052:web:614928382d93d2b50eb499"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const auth = getAuth(app);
+
+    const loginBox   = document.getElementById("loginBox");
+    const adminPanel = document.getElementById("adminPanel");
+    const userInfo   = document.getElementById("userInfo");
+
+    const loginEmail = document.getElementById("loginEmail");
+    const loginPass  = document.getElementById("loginPass");
+    const btnLogin   = document.getElementById("btnLogin");
+    const btnLogout  = document.getElementById("btnLogout");
+
+    const w_name  = document.getElementById("w_name");
+    const w_type  = document.getElementById("w_type");
+    const w_tag   = document.getElementById("w_tag");
+    const w_range = document.getElementById("w_range");
+    const w_desc  = document.getElementById("w_desc");
+    const w_img   = document.getElementById("w_img");
+    const btnAddWeapon = document.getElementById("btnAddWeapon");
+
+    const d_title = document.getElementById("d_title");
+    const d_date  = document.getElementById("d_date");
+    const d_text  = document.getElementById("d_text");
+    const d_img   = document.getElementById("d_img");
+    const btnAddDaily = document.getElementById("btnAddDaily");
+
+    const weaponsList = document.getElementById("weaponsList");
+    const dailyList   = document.getElementById("dailyList");
+
+    let weaponsCache = [];
+    let dailyCache   = [];
+
+    // ==== Auth state ====
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            loginBox.classList.add("hidden");
+            adminPanel.classList.remove("hidden");
+            userInfo.textContent = "Увійшов: " + (user.email || "");
+            loadAll();
+        } else {
+            loginBox.classList.remove("hidden");
+            adminPanel.classList.add("hidden");
+            userInfo.textContent = "";
+        }
+    });
+
+    btnLogin.addEventListener("click", async () => {
+        try {
+            await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
+        } catch (err) {
+            alert("Помилка входу: " + err.message);
+        }
+    });
+
+    btnLogout.addEventListener("click", async () => {
+        await signOut(auth);
+    });
+
+    // ==== Завантаження даних ====
+    async function loadAll() {
+        await Promise.all([loadWeapons(), loadDaily()]);
+    }
+
+    async function loadWeapons() {
+        const qW = query(collection(db, "weapons"), orderBy("name"));
+        const snap = await getDocs(qW);
+        weaponsCache = [];
+        snap.forEach(d => weaponsCache.push({ id: d.id, ...d.data() }));
+        renderWeaponsList();
+    }
+
+    async function loadDaily() {
+        const qD = query(collection(db, "daily"), orderBy("date", "desc"));
+        const snap = await getDocs(qD);
+        dailyCache = [];
+        snap.forEach(d => dailyCache.push({ id: d.id, ...d.data() }));
+        renderDailyList();
+    }
+
+    function renderWeaponsList() {
+        weaponsList.innerHTML = "";
+        weaponsCache.forEach(w => {
+            const div = document.createElement("div");
+            div.className = "item-row";
+            div.innerHTML = `
+                <h4>${w.name || ""}</h4>
+                <small>${(w.type || "").toUpperCase()} • ${w.tag || ""}</small><br>
+                <small>${w.range || ""}</small>
+                <div class="item-actions">
+                    <button class="btn-small btn-danger" data-id="${w.id}" data-type="weapon">Видалити</button>
+                </div>
+            `;
+            weaponsList.appendChild(div);
+        });
+
+        weaponsList.querySelectorAll("button[data-type='weapon']").forEach(btn => {
+            btn.addEventListener("click", () => deleteWeapon(btn.getAttribute("data-id")));
+        });
+    }
+
+    function renderDailyList() {
+        dailyList.innerHTML = "";
+        dailyCache.forEach(d => {
+            const div = document.createElement("div");
+            div.className = "item-row";
+            div.innerHTML = `
+                <h4>${d.title || ""}</h4>
+                <small>${d.date || ""}</small>
+                <div class="item-actions">
+                    <button class="btn-small btn-danger" data-id="${d.id}" data-type="daily">Видалити</button>
+                </div>
+            `;
+            dailyList.appendChild(div);
+        });
+
+        dailyList.querySelectorAll("button[data-type='daily']").forEach(btn => {
+            btn.addEventListener("click", () => deleteDaily(btn.getAttribute("data-id")));
+        });
+    }
+
+    // ==== Додати Weapon ====
+    btnAddWeapon.addEventListener("click", async () => {
+        try {
+            await addDoc(collection(db, "weapons"), {
+                name:  w_name.value,
+                type:  w_type.value,
+                tag:   w_tag.value,
+                range: w_range.value,
+                desc:  w_desc.value,
+                img:   w_img.value
+            });
+            w_name.value = "";
+            w_tag.value = "";
+            w_range.value = "";
+            w_desc.value = "";
+            w_img.value = "";
+            await loadWeapons();
+            alert("Засіб додано");
+        } catch (err) {
+            alert("Помилка додавання: " + err.message);
+        }
+    });
+
+    // ==== Додати Daily ====
+    btnAddDaily.addEventListener("click", async () => {
+        try {
+            await addDoc(collection(db, "daily"), {
+                title: d_title.value,
+                date:  d_date.value,
+                text:  d_text.value,
+                img:   d_img.value
+            });
+            d_title.value = "";
+            d_date.value  = "";
+            d_text.value  = "";
+            d_img.value   = "";
+            await loadDaily();
+            alert("Оновлення додано");
+        } catch (err) {
+            alert("Помилка додавання: " + err.message);
+        }
+    });
+
+    // ==== Видалення ====
+    async function deleteWeapon(id) {
+        if (!confirm("Точно видалити засіб?")) return;
+        await deleteDoc(doc(db, "weapons", id));
+        await loadWeapons();
+    }
+
+    async function deleteDaily(id) {
+        if (!confirm("Точно видалити запис?")) return;
+        await deleteDoc(doc(db, "daily", id));
+        await loadDaily();
+    }
+</script>
+
+</body>
+</html>

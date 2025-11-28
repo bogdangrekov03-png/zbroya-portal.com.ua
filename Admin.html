@@ -59,7 +59,7 @@
         box-shadow: 0 0 14px rgba(255,0,0,0.7);
     }
     button:hover {
-        background: #e00000;
+        background: #d00000;
     }
 
     .hidden { display: none; }
@@ -91,9 +91,9 @@
         font-size: 12px;
         border-radius: 999px;
     }
-    .btn-danger {
-        background: #d00000;
-    }
+    .btn-danger { background: #d00000; }
+    .btn-edit { background: #007cff; }
+
     .top-bar {
         display: flex;
         justify-content: space-between;
@@ -101,6 +101,26 @@
         gap: 10px;
         margin-bottom: 10px;
     }
+
+    /* Пошук */
+    #searchInput {
+        width: 300px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+    }
+
+    /* Прев’ю фото */
+    #imgPreview {
+        margin-top: 10px;
+        max-width: 200px;
+        border-radius: 10px;
+        border: 1px solid red;
+        display: none;
+    }
+
+    /* Кнопки сортування */
+    .sort-bar { display: flex; gap: 10px; margin-bottom: 14px; }
+    .sort-btn { background: #222; border: 1px solid red; }
 </style>
 </head>
 <body>
@@ -127,9 +147,11 @@
         </div>
     </div>
 
-    <!-- Додати засіб ураження -->
+    <!-- Додати / Редагувати -->
     <div class="card">
-        <h2>Додати / оновити засіб ураження</h2>
+        <h2 id="formTitle">Додати засіб ураження</h2>
+
+        <input id="editId" class="hidden" />
 
         <label>Назва</label>
         <input id="w_name" />
@@ -142,13 +164,11 @@
             <option value="uav">Дрони</option>
         </select>
 
-        <label>Тег (коротко, наприклад: артилерія, РСЗВ)</label>
+        <label>Тег</label>
         <input id="w_tag" />
 
         <label>Характеристики (кожна з нового рядка)</label>
-<textarea id="w_specs" placeholder="Калібр: 5.45 мм
-Маса кулі: 3.4 г
-Початкова швидкість: 900 м/с"></textarea>
+        <textarea id="w_specs"></textarea>
 
         <label>Опис</label>
         <textarea id="w_desc"></textarea>
@@ -156,161 +176,254 @@
         <label>URL фото</label>
         <input id="w_img" />
 
-        <button id="btnAddWeapon">Зберегти засіб</button>
+        <img id="imgPreview" />
+
+        <button id="btnSaveWeapon">Зберегти</button>
     </div>
 
-    <!-- Список зброї -->
+    <!-- Сортування + пошук -->
     <div class="card">
         <h2>Усі засоби ураження</h2>
+
+        <div class="sort-bar">
+            <button class="sort-btn" data-sort="name">Сортувати: Назва</button>
+            <button class="sort-btn" data-sort="type">Сортувати: Категорія</button>
+        </div>
+
+        <input id="searchInput" type="text" placeholder="Пошук..." />
+
         <div id="weaponsList" class="items-list"></div>
     </div>
 
 </div>
 
+
 <script type="module">
 
-    // ========================= FIREBASE IMPORTS =========================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import {
-        getFirestore,
-        collection,
-        addDoc,
-        getDocs,
-        deleteDoc,
-        doc,
-        query,
-        orderBy
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+// ====================== FIREBASE ======================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-    import {
-        getAuth,
-        signInWithEmailAndPassword,
-        onAuthStateChanged,
-        signOut
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    // ========================= FIREBASE CONFIG =========================
-    const firebaseConfig = {
-      apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
-      authDomain: "rooot-71962.firebaseapp.com",
-      projectId: "rooot-71962",
-      storageBucket: "rooot-71962.firebasestorage.app",
-      messagingSenderId: "718921321052",
-      appId: "1:718921321052:web:614928382d93d2b50eb499"
+// ====================== CONFIG ======================
+const firebaseConfig = {
+    apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
+    authDomain: "rooot-71962.firebaseapp.com",
+    projectId: "rooot-71962",
+    storageBucket: "rooot-71962.firebasestorage.app",
+    messagingSenderId: "718921321052",
+    appId: "1:718921321052:web:614928382d93d2b50eb499"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const auth = getAuth();
+
+// ====================== DOM ======================
+const loginBox   = document.getElementById("loginBox");
+const adminPanel = document.getElementById("adminPanel");
+const userInfo   = document.getElementById("userInfo");
+
+const btnLogin  = document.getElementById("btnLogin");
+const loginEmail = document.getElementById("loginEmail");
+const loginPass  = document.getElementById("loginPass");
+const btnLogout = document.getElementById("btnLogout");
+
+const formTitle = document.getElementById("formTitle");
+const editId = document.getElementById("editId");
+
+const w_name  = document.getElementById("w_name");
+const w_type  = document.getElementById("w_type");
+const w_tag   = document.getElementById("w_tag");
+const w_desc  = document.getElementById("w_desc");
+const w_specs = document.getElementById("w_specs");
+const w_img   = document.getElementById("w_img");
+const btnSaveWeapon = document.getElementById("btnSaveWeapon");
+
+const imgPreview = document.getElementById("imgPreview");
+const weaponsList = document.getElementById("weaponsList");
+const searchInput = document.getElementById("searchInput");
+
+let weapons = [];
+
+
+// ====================== AUTH ======================
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        loginBox.classList.add("hidden");
+        adminPanel.classList.remove("hidden");
+        userInfo.textContent = "Увійшов: " + user.email;
+        loadWeapons();
+    } else {
+        loginBox.classList.remove("hidden");
+        adminPanel.classList.add("hidden");
+    }
+});
+
+btnLogin.onclick = async () => {
+    try {
+        await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
+    } catch (e) {
+        alert("Помилка входу: " + e.message);
+    }
+};
+
+btnLogout.onclick = () => signOut(auth);
+
+
+// ====================== LOAD ======================
+async function loadWeapons() {
+    const snap = await getDocs(collection(db, "weapons"));
+    weapons = [];
+
+    snap.forEach(d => weapons.push({ id: d.id, ...d.data() }));
+
+    renderWeapons(weapons);
+}
+
+
+// ====================== RENDER ======================
+function renderWeapons(list) {
+    weaponsList.innerHTML = "";
+
+    list.forEach(w => {
+        const row = document.createElement("div");
+        row.className = "item-row";
+        row.innerHTML = `
+            <h4>${w.name}</h4>
+            <small>${w.type.toUpperCase()} • ${w.tag}</small>
+
+            <div class="item-actions">
+                <button class="btn-small btn-edit" data-id="${w.id}">Редагувати</button>
+                <button class="btn-small btn-danger" data-id="${w.id}">Видалити</button>
+            </div>
+        `;
+
+        // Редагування
+        row.querySelector(".btn-edit").onclick = () => loadForEdit(w);
+
+        // Видалення
+        row.querySelector(".btn-danger").onclick = () => deleteWeapon(w.id);
+
+        weaponsList.appendChild(row);
+    });
+}
+
+
+// ====================== PREVIEW IMAGE ======================
+w_img.oninput = () => {
+    imgPreview.src = w_img.value;
+    imgPreview.style.display = w_img.value.trim() ? "block" : "none";
+};
+
+
+// ====================== ADD / UPDATE ======================
+btnSaveWeapon.onclick = async () => {
+    const data = {
+        name: w_name.value.trim(),
+        type: w_type.value,
+        tag:  w_tag.value.trim(),
+        desc: w_desc.value.trim(),
+        img:  w_img.value.trim(),
+        specs: w_specs.value.split("\n").map(l => l.trim()).filter(l => l)
     };
 
-    const app  = initializeApp(firebaseConfig);
-    const db   = getFirestore(app);
-    const auth = getAuth(app);
-
-    // ========================= DOM ELEMENTS =========================
-    const loginBox   = document.getElementById("loginBox");
-    const adminPanel = document.getElementById("adminPanel");
-    const userInfo   = document.getElementById("userInfo");
-
-    const loginEmail = document.getElementById("loginEmail");
-    const loginPass  = document.getElementById("loginPass");
-    const btnLogin   = document.getElementById("btnLogin");
-    const btnLogout  = document.getElementById("btnLogout");
-
-    const w_name  = document.getElementById("w_name");
-    const w_type  = document.getElementById("w_type");
-    const w_tag   = document.getElementById("w_tag");
-    const w_desc  = document.getElementById("w_desc");
-    const w_specs = document.getElementById("w_specs");
-    const w_img   = document.getElementById("w_img");
-    const btnAddWeapon = document.getElementById("btnAddWeapon");
-
-    const weaponsList = document.getElementById("weaponsList");
-
-    // ========================= AUTH CONTROL =========================
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            loginBox.classList.add("hidden");
-            adminPanel.classList.remove("hidden");
-            userInfo.textContent = "Увійшов: " + user.email;
-            loadWeapons();
+    try {
+        if (editId.value) {
+            // UPDATE
+            await updateDoc(doc(db, "weapons", editId.value), data);
+            alert("Оновлено!");
         } else {
-            loginBox.classList.remove("hidden");
-            adminPanel.classList.add("hidden");
+            // ADD
+            await addDoc(collection(db, "weapons"), data);
+            alert("Додано!");
         }
-    });
 
-    btnLogin.addEventListener("click", async () => {
-        try {
-            await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
-        } catch (err) {
-            alert("Помилка входу: " + err.message);
-        }
-    });
-
-    btnLogout.addEventListener("click", () => signOut(auth));
-
-    // ========================= LOAD WEAPONS =========================
-    async function loadWeapons() {
-        const qW = query(collection(db, "weapons"), orderBy("name"));
-        const snap = await getDocs(qW);
-
-        weaponsList.innerHTML = "";
-
-        snap.forEach(docSnap => {
-            const w = docSnap.data();
-
-            const row = document.createElement("div");
-            row.className = "item-row";
-            row.innerHTML = `
-                <h4>${w.name}</h4>
-                <small>${w.type.toUpperCase()} • ${w.tag}</small>
-                <div class="item-actions">
-                    <button class="btn-small btn-danger" data-id="${docSnap.id}">Видалити</button>
-                </div>
-            `;
-            weaponsList.appendChild(row);
-        });
-
-        weaponsList.querySelectorAll("button").forEach(btn => {
-            btn.addEventListener("click", () => deleteWeapon(btn.dataset.id));
-        });
-    }
-
-    // ========================= ADD WEAPON =========================
-    btnAddWeapon.addEventListener("click", async () => {
-        try {
-            await addDoc(collection(db, "weapons"), {
-                name:  w_name.value.trim(),
-                type:  w_type.value.trim(),
-                tag:   w_tag.value.trim(),
-                desc:  w_desc.value.trim(),
-                img:   w_img.value.trim(),
-
-                specs: w_specs.value
-                    .split("\n")
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0)
-            });
-
-            w_name.value = "";
-            w_tag.value = "";
-            w_desc.value = "";
-            w_img.value = "";
-            w_specs.value = "";
-
-            await loadWeapons();
-            alert("Засіб додано!");
-
-        } catch (err) {
-            alert("Помилка: " + err.message);
-        }
-    });
-
-    // ========================= DELETE WEAPON =========================
-    async function deleteWeapon(id) {
-        if (!confirm("Видалити засіб?")) return;
-        await deleteDoc(doc(db, "weapons", id));
+        clearForm();
         loadWeapons();
+
+    } catch (e) {
+        alert("Помилка: " + e.message);
     }
+};
+
+
+// ====================== LOAD FOR EDIT ======================
+function loadForEdit(w) {
+    editId.value = w.id;
+
+    w_name.value  = w.name;
+    w_type.value  = w.type;
+    w_tag.value   = w.tag;
+    w_desc.value  = w.desc;
+    w_img.value   = w.img;
+    w_specs.value = (w.specs || []).join("\n");
+
+    imgPreview.src = w.img;
+    imgPreview.style.display = "block";
+
+    formTitle.textContent = "Редагувати засіб";
+    btnSaveWeapon.textContent = "Оновити";
+}
+
+
+// ====================== CLEAR FORM ======================
+function clearForm() {
+    editId.value = "";
+    w_name.value = "";
+    w_tag.value = "";
+    w_desc.value = "";
+    w_specs.value = "";
+    w_img.value = "";
+    imgPreview.style.display = "none";
+
+    formTitle.textContent = "Додати засіб ураження";
+    btnSaveWeapon.textContent = "Зберегти";
+}
+
+
+// ====================== DELETE ======================
+async function deleteWeapon(id) {
+    if (!confirm("Видалити?")) return;
+    await deleteDoc(doc(db, "weapons", id));
+    loadWeapons();
+}
+
+
+// ====================== SORTING ======================
+document.querySelectorAll(".sort-btn").forEach(btn => {
+    btn.onclick = () => {
+        const key = btn.dataset.sort;
+        const sorted = [...weapons].sort((a, b) => a[key].localeCompare(b[key]));
+        renderWeapons(sorted);
+    };
+});
+
+
+// ====================== SEARCH ======================
+searchInput.oninput = () => {
+    const q = searchInput.value.toLowerCase();
+    const filtered = weapons.filter(w =>
+        w.name.toLowerCase().includes(q) ||
+        w.tag.toLowerCase().includes(q)
+    );
+    renderWeapons(filtered);
+};
 
 </script>
-
 </body>
 </html>

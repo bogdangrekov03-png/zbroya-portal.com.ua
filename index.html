@@ -655,6 +655,7 @@ footer a:hover {
             burger.classList.remove('active');
             menu.classList.remove('visible');
         });
+    });
 
     // ===== 3D ПАРАЛАКС HERO =====
     const heroParallax = document.getElementById('heroParallax');
@@ -785,24 +786,11 @@ footer a:hover {
     }
 
     loadData();
-// ===== ПОШУК =====
-const searchInput = document.getElementById("searchInput");
-
-function applySearchFilter() {
-    const q = searchInput.value.toLowerCase().trim();
-    const cards = document.querySelectorAll(".weapon-card");
-
-    cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(q) ? "block" : "none";
-    });
-}
-
-searchInput.addEventListener("input", applySearchFilter);
 </script>
 
 </body>
 </html>
+
 
 
 

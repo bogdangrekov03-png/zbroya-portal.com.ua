@@ -615,35 +615,94 @@ mark {
     line-height: 1.5;
     color: #e5e5e5;
 }
-/* ===== Блоки опису / характеристик ===== */
+/* ====== ТАКТИЧНІ ІНФО-БЛОКИ ====== */
 
 .info-block {
-    border: 1px solid rgba(255,39,39,0.45);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 14px;
-    background: rgba(10,0,0,0.55);
-    box-shadow: 0 0 12px rgba(255,0,0,0.25);
+    position: relative;
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    background: rgba(10, 0, 0, 0.55);
+    border: 1px solid rgba(255, 40, 40, 0.35);
+    border-radius: 12px;
+    box-shadow: 
+        0 0 12px rgba(255,0,0,0.25),
+        inset 0 0 18px rgba(255,0,0,0.15);
+    backdrop-filter: blur(6px);
+    overflow: hidden;
 }
 
+/* Декоративна лінія зверху */
+.info-block::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 14px;
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,60,60,0.8), transparent);
+}
+
+/* Скошена панель заголовка */
 .info-block h3 {
-    font-size: 15px;
+    position: relative;
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(40,0,0,0.8);
+    border-left: 3px solid #ff2727;
+    border-radius: 4px 8px 8px 4px;
     text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.8px;
     color: #ff5757;
-    margin-bottom: 8px;
-    text-shadow: 0 0 6px rgba(255,39,39,0.8);
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(255,50,50,0.9);
 }
 
+/* Маленька іконка перед заголовком */
+.info-block h3::before {
+    content: "◆";
+    font-size: 10px;
+    margin-right: 6px;
+    color: #ff2727;
+}
+
+/* Текст */
 .info-block p,
 .info-block li {
     font-size: 14px;
-    line-height: 1.55;
-    color: #e8e8e8;
+    line-height: 1.6;
+    color: #e5e5e5;
 }
 
+/* Список характеристик */
 .info-block ul {
+    margin-top: 8px;
     margin-left: 14px;
-    margin-top: 6px;
+}
+
+.info-block ul li {
+    margin-bottom: 5px;
+    padding-left: 6px;
+    position: relative;
+}
+
+/* Тактичний маркер */
+.info-block ul li::before {
+    content: "▸";
+    position: absolute;
+    left: -10px;
+    color: #ff2727;
+    font-size: 12px;
+}
+
+/* Ефект наведення */
+.info-block:hover {
+    border-color: rgba(255, 80, 80, 0.65);
+    box-shadow: 
+        0 0 18px rgba(255,0,0,0.55),
+        inset 0 0 25px rgba(255,0,0,0.25);
+    transform: translateY(-1px);
+    transition: 0.25s ease;
 }
 
 
@@ -1117,6 +1176,7 @@ function applySearchFilter() {
 </script>
 </body>
 </html>
+
 
 
 

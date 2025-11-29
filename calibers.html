@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Калібри – Засоби ураження</title>
+
+<style>
+/* ===== ОСНОВНІ ЗМІННІ ===== */
+:root {
+    --bg-main: #020204;
+    --bg-card: #0b0b0f;
+    --accent: #ff2727;
+    --accent-soft: #ff5757;
+    --border-glow: 0 0 18px rgba(255, 39, 39, 0.7);
+    --text-main: #f5f5f5;
+    --text-muted: #b8b8b8;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    background: radial-gradient(circle at top, #220000 0%, #020204 45%, #000000 100%);
+    font-family:"Segoe UI", system-ui, sans-serif;
+    color:var(--text-main);
+    overflow-x:hidden;
+}
+
+/* ===== HUD ===== */
+.hud-nav {
+    position:fixed;
+    top:0; left:0; width:100%;
+    backdrop-filter:blur(10px);
+    background:linear-gradient(90deg, rgba(0,0,0,0.94), rgba(40,0,0,0.9));
+    border-bottom:1px solid rgba(255,39,39,0.5);
+    padding:8px 14px;
+    display:flex; justify-content:space-between; align-items:center;
+    z-index:50;
+}
+.hud-logo { display:flex; flex-direction:column; }
+.hud-logo-main { font-size:15px; text-transform:uppercase; color:var(--accent-soft); }
+.hud-logo-sub { font-size:11px; color:var(--text-muted); }
+
+/* бургер */
+.hud-burger {
+    width:32px; height:32px; border-radius:50%;
+    border:1px solid rgba(255,39,39,0.6);
+    display:flex; justify-content:center; align-items:center;
+    cursor:pointer; position:relative;
+    box-shadow:0 0 15px rgba(255,39,39,0.7);
+}
+.hud-burger span,
+.hud-burger::before,
+.hud-burger::after {
+    content:"";
+    position:absolute;
+    width:18px; height:2px;
+    background:var(--accent);
+    border-radius:999px;
+    transition:0.25s;
+}
+.hud-burger span { position:relative; }
+.hud-burger::before { transform:translateY(-6px); }
+.hud-burger::after  { transform:translateY(6px); }
+.hud-burger.active span { opacity:0; }
+.hud-burger.active::before { transform:rotate(45deg); }
+.hud-burger.active::after  { transform:rotate(-45deg); }
+
+/* HUD MENU */
+.hud-menu {
+    position:fixed;
+    top:50px; right:10px; width:240px;
+    background:radial-gradient(circle at top, #3b0000 0%, #050507 50%, #000 100%);
+    border:1px solid rgba(255,39,39,0.7);
+    border-radius:14px;
+    padding:12px;
+    opacity:0;
+    transform:translateY(-10px) scale(0.95);
+    pointer-events:none;
+    transition:0.25s;
+    z-index:40;
+}
+.hud-menu.visible {
+    opacity:1;
+    transform:translateY(0) scale(1);
+    pointer-events:auto;
+}
+
+.hud-menu-groups { display:flex; flex-direction:column; gap:10px; }
+.menu-group-title {
+    font-size:10px; text-transform:uppercase; letter-spacing:1px;
+    color:var(--text-muted); margin-bottom:4px;
+}
+.hud-menu ul { list-style:none; display:flex; flex-direction:column; gap:6px; }
+.hud-menu li button {
+    background:linear-gradient(90deg,#150000,#2a0000);
+    border:1px solid rgba(255,39,39,0.7);
+    padding:8px 12px;
+    border-radius:9px;
+    color:#fff;
+    text-align:left;
+    cursor:pointer;
+}
+.hud-menu li button:hover {
+    background:linear-gradient(90deg,#360000,#550000);
+    box-shadow:0 0 18px rgba(255,39,39,0.8);
+}
+
+/* ===== HERO ===== */
+.hero {
+    margin-top:52px;
+    padding:70px 18px 30px;
+}
+.hero-inner { max-width:900px; margin:0 auto; }
+.hero-badge {
+    display:inline-block; padding:4px 10px;
+    background:#000a; border:1px solid #ff3939;
+    border-radius:999px; color:#ff7a7a;
+    font-size:11px;
+}
+.hero-title {
+    font-size:26px; margin-top:14px;
+    text-transform:uppercase;
+    text-shadow:0 0 18px rgba(255,39,39,0.9);
+}
+.hero-sub { margin-top:8px; color:var(--text-muted); line-height:1.6; }
+
+/* ===== СЕКЦІЇ ===== */
+section.page {
+    max-width:960px; margin:0 auto; padding:0 18px 40px;
+}
+
+.section-title {
+    font-size:20px; margin-bottom:10px;
+    text-transform:uppercase;
+    color:var(--accent-soft);
+    text-shadow:0 0 12px rgba(255,39,39,0.9);
+}
+.section-text { color:var(--text-muted); margin-bottom:12px; line-height:1.6; }
+
+/* INFO BLOCK */
+.info-block {
+    background:rgba(10,0,0,0.55);
+    border:1px solid rgba(255,40,40,0.35);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:18px;
+    box-shadow:inset 0 0 18px rgba(255,0,0,0.15);
+}
+.info-block h3 {
+    color:#ff5757; text-transform:uppercase;
+    margin-bottom:10px; font-size:14px;
+}
+.info-block table {
+    width:100%; border-collapse:collapse; margin-top:8px;
+}
+.info-block table th,
+.info-block table td {
+    border-bottom:1px solid rgba(255,40,40,0.35);
+    padding:8px 4px;
+    font-size:14px;
+}
+.info-block table th {
+    color:#ff7272; text-align:left; text-transform:uppercase;
+}
+
+/* FOOTER */
+footer {
+    text-align:center; padding:20px 0 30px; font-size:13px;
+    color:var(--text-muted);
+}
+footer a { color:var(--accent-soft); }
+footer a:hover { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ===== HUD ===== -->
+<div class="hud-nav">
+    <div class="hud-logo">
+        <div class="hud-logo-main">Засоби ураження</div>
+        <div class="hud-logo-sub">калібри</div>
+    </div>
+    <div id="hudBurger" class="hud-burger"><span></span></div>
+
+    <div id="hudMenu" class="hud-menu">
+        <div class="hud-menu-groups">
+
+            <div class="menu-group">
+                <div class="menu-group-title">Основне</div>
+                <ul><li><button data-link="index.html">Головна</button></li></ul>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-group-title">Категорії</div>
+                <ul>
+                    <li><button data-link="ammo.html">Боєприпаси</button></li>
+                    <li><button data-link="rockets.html">Ракетні комплекси</button></li>
+                    <li><button data-link="pvo.html">ППО</button></li>
+                    <li><button data-link="uav.html">БпЛА</button></li>
+                </ul>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-group-title">Довідник</div>
+                <ul>
+                    <li><button data-link="classification.html">Класифікація</button></li>
+                    <li><button data-link="calibers.html">Калібри</button></li>
+                </ul>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-group-title">Тактика</div>
+                <ul>
+                    <li><button data-link="tactics.html">Тактичне застосування</button></li>
+                </ul>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-group-title">Українські розробки</div>
+                <ul><li><button data-link="ukraine-dev.html">Огляд</button></li></ul>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-group-title">Безпека</div>
+                <ul><li><button data-link="safety.html">Правила безпеки</button></li></ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-badge">довідник</div>
+        <h1 class="hero-title">Калібри боєприпасів</h1>
+        <p class="hero-sub">
+            Основні калібри артилерійських, стрілецьких, мінометних та інженерних боєприпасів,
+            які застосовуються у сучасних Збройних Силах та військових конфліктах.
+        </p>
+    </div>
+</section>
+
+<!-- ===== СЕКЦІЇ ===== -->
+
+<section class="page">
+    <h2 class="section-title">1. Артилерійські калібри</h2>
+
+    <div class="info-block">
+        <h3>Основні системи</h3>
+
+        <table>
+            <tr><th>Калібр</th><th>Система</th><th>Примітки</th></tr>
+
+            <tr><td>105 мм</td><td>M101, L118</td><td>Легка артилерія</td></tr>
+            <tr><td>122 мм</td><td>Д-30, 2С1 Гвоздика</td><td>Середня дальність</td></tr>
+            <tr><td>152 мм</td><td>Мста-Б, 2С3, 2С19</td><td>Стандарт СРСР</td></tr>
+            <tr><td>155 мм</td><td>M777, Krab, PzH2000</td><td>НАТО</td></tr>
+
+        </table>
+    </div>
+</section>
+
+<section class="page">
+    <h2 class="section-title">2. Мінометні калібри</h2>
+
+    <div class="info-block">
+        <h3>Піхотні та батальйонні</h3>
+
+        <table>
+            <tr><th>Калібр</th><th>Тип</th><th>Призначення</th></tr>
+
+            <tr><td>60 мм</td><td>Легкі</td><td>Штурмові групи</td></tr>
+            <tr><td>82 мм</td><td>Батальйонні</td><td>Піхотна підтримка</td></tr>
+            <tr><td>120 мм</td><td>Полкові</td><td>Високий вогневий вплив</td></tr>
+
+        </table>
+    </div>
+</section>
+
+<section class="page">
+    <h2 class="section-title">3. Стрілецькі калібри</h2>
+
+    <div class="info-block">
+        <h3>Стандарт ЗСУ</h3>
+
+        <table>
+            <tr><th>Калібр</th><th>Зброя</th><th>Призначення</th></tr>
+
+            <tr><td>5.45×39</td><td>АК-74, АКСУ</td><td>Штурмові групи</td></tr>
+            <tr><td>7.62×54R</td><td>ПКМ, СВД</td><td>Підтримка та снайпінг</td></tr>
+            <tr><td>12.7×108</td><td>НСВ, ДШК</td><td>Проти легкої техніки</td></tr>
+
+        </table>
+    </div>
+</section>
+
+<section class="page">
+    <h2 class="section-title">4. Калібри РСЗВ та ракет</h2>
+
+    <div class="info-block">
+        <h3>Основні платформи</h3>
+
+        <table>
+            <tr><th>Калібр</th><th>Система</th><th>Тип</th></tr>
+
+            <tr><td>122 мм</td><td>БМ-21 «Град»</td><td>РСЗВ</td></tr>
+            <tr><td>220 мм</td><td>Ураган</td><td>РСЗВ</td></tr>
+            <tr><td>300 мм</td><td>Смерч</td><td>РСЗВ</td></tr>
+            <tr><td>227 мм</td><td>HIMARS</td><td>Ракети</td></tr>
+
+        </table>
+    </div>
+</section>
+
+<footer>
+    © 2025 Засоби ураження • калібри
+</footer>
+
+<script>
+const burger=document.getElementById("hudBurger");
+const menu=document.getElementById("hudMenu");
+burger.addEventListener("click",()=>{
+    burger.classList.toggle("active");
+    menu.classList.toggle("visible");
+});
+menu.querySelectorAll("button[data-link]").forEach(btn=>{
+    btn.addEventListener("click",()=>window.location.href=btn.dataset.link);
+});
+</script>
+
+</body>
+</html>

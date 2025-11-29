@@ -249,7 +249,7 @@ footer{
 <!-- HUD -->
 <!-- ===== HUD ===== -->
 <div class="hud-nav">
-    <div class="hud-logo">
+    <div class="hud-logo" id="homeLink">
         <div class="hud-logo-main">Засоби ураження</div>
         <div class="hud-logo-sub">Українські розробки</div>
     </div>
@@ -381,6 +381,13 @@ menu.querySelectorAll("button[data-link]").forEach(btn => {
         if (link) window.location.href = link;
     });
 });
+    /* ========= ПОВЕРНЕННЯ НА ГОЛОВНУ ========= */
+const home = document.getElementById("homeLink");
+
+home.addEventListener("click", () => {
+    window.location.href = "index.html";
+});
+
 </script>
 
 </body>

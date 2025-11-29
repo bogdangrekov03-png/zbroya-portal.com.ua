@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Правила безпеки – Засоби ураження</title>
+
+<style>
+:root {
+    --bg-main:#020204; --bg-card:#0b0b0f;
+    --accent:#ff2727; --accent-soft:#ff5757;
+    --border-glow:0 0 18px rgba(255,39,39,.7);
+    --text-main:#f5f5f5; --text-muted:#b8b8b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    background:radial-gradient(circle at top,#220000,#020204 45%,#000 100%);
+    color:var(--text-main);
+    font-family:"Segoe UI",system-ui,sans-serif;
+}
+
+/* HUD */
+.hud-nav{
+    position:fixed;top:0;left:0;width:100%;
+    padding:8px 14px;z-index:50;
+    display:flex;justify-content:space-between;align-items:center;
+    background:linear-gradient(90deg,rgba(0,0,0,.94),rgba(40,0,0,.9));
+    border-bottom:1px solid rgba(255,39,39,.5);
+}
+.hud-logo-main{font-size:15px;text-transform:uppercase;color:var(--accent-soft);}
+.hud-logo-sub{font-size:11px;color:var(--text-muted);}
+.hud-burger{
+    width:32px;height:32px;border-radius:50%;
+    border:1px solid rgba(255,39,39,.6);
+    display:flex;justify-content:center;align-items:center;
+    cursor:pointer;position:relative;
+}
+.hud-burger span,
+.hud-burger::before,
+.hud-burger::after{
+    content:"";width:18px;height:2px;background:var(--accent);
+    border-radius:999px;position:absolute;
+}
+.hud-burger::before{transform:translateY(-6px);}
+.hud-burger::after{transform:translateY(6px);}
+.hud-burger.active span{opacity:0;}
+.hud-burger.active::before{transform:rotate(45deg);}
+.hud-burger.active::after{transform:rotate(-45deg);}
+
+.hud-menu{
+    position:fixed;top:50px;right:10px;width:240px;
+    opacity:0;pointer-events:none;border-radius:14px;
+    background:radial-gradient(circle at top,#3b0000,#050507,#000);
+    border:1px solid rgba(255,39,39,.7);
+    box-shadow:0 0 25px rgba(255,39,39,.6);
+    padding:12px;transition:.25s;
+    transform:translateY(-10px) scale(.95);
+}
+.hud-menu.visible{
+    opacity:1;pointer-events:auto;transform:translateY(0) scale(1);
+}
+.menu-group-title{
+    font-size:10px;text-transform:uppercase;margin-bottom:4px;
+    color:var(--text-muted);
+}
+.hud-menu ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.hud-menu li button{
+    background:linear-gradient(90deg,#150000,#2a0000);
+    border:1px solid rgba(255,39,39,.7);
+    padding:8px 12px;border-radius:9px;
+    text-align:left;color:#fff;cursor:pointer;
+}
+.hud-menu li button:hover{
+    background:linear-gradient(90deg,#360000,#550000);
+    box-shadow:0 0 18px rgba(255,39,39,.8);
+}
+
+/* HERO */
+.hero{
+    margin-top:52px;padding:70px 18px 30px;
+}
+.hero-inner{max-width:860px;margin:0 auto;}
+.hero-title{
+    font-size:27px;text-transform:uppercase;
+    text-shadow:0 0 18px rgba(255,39,39,.9);
+}
+.hero-sub{margin-top:10px;color:var(--text-muted);}
+
+/* PAGE */
+section.page{
+    max-width:960px;margin:0 auto;padding:10px 18px 40px;
+}
+.section-title{
+    color:var(--accent-soft);font-size:20px;
+    text-transform:uppercase;margin-bottom:10px;
+    text-shadow:0 0 12px rgba(255,39,39,.9);
+}
+
+/* INFO BLOCK */
+.info-block{
+    background:rgba(10,0,0,.55);
+    border:1px solid rgba(255,40,40,.35);
+    border-radius:12px;padding:16px 18px;
+    margin-bottom:18px;
+    box-shadow:inset 0 0 18px rgba(255,0,0,.15);
+}
+.info-block h3{
+    color:#ff5757;text-transform:uppercase;
+    margin-bottom:10px;font-size:15px;
+}
+.info-block p, .info-block li{
+    color:#ddd;line-height:1.6;font-size:14px;
+}
+.info-block ul{margin-left:15px;margin-top:8px;}
+.info-block li{margin-bottom:6px;}
+
+footer{text-align:center;padding:20px 0 30px;color:var(--text-muted);}
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<div class="hud-nav">
+    <div>
+        <div class="hud-logo-main">Засоби ураження</div>
+        <div class="hud-logo-sub">правила безпеки</div>
+    </div>
+    <div id="hudBurger" class="hud-burger"><span></span></div>
+
+    <div id="hudMenu" class="hud-menu">
+
+        <div class="menu-group">
+            <div class="menu-group-title">Категорії</div>
+            <ul>
+                <li><button data-link="ammo.html">Боєприпаси</button></li>
+                <li><button data-link="rockets.html">Ракетні комплекси</button></li>
+                <li><button data-link="pvo.html">ППО</button></li>
+                <li><button data-link="uav.html">БпЛА</button></li>
+            </ul>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-group-title">Тактика</div>
+            <ul><li><button data-link="tactics.html">Тактичне застосування</button></li></ul>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-group-title">Довідник</div>
+            <ul>
+                <li><button data-link="classification.html">Класифікація</button></li>
+                <li><button data-link="calibers.html">Калібри</button></li>
+            </ul>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-group-title">Безпека</div>
+            <ul><li><button data-link="safety.html">Правила безпеки</button></li></ul>
+        </div>
+    </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-inner">
+        <h1 class="hero-title">Правила безпеки</h1>
+        <p class="hero-sub">
+            Основні вимоги щодо поводження зі зброєю, боєприпасами,
+            вибухонебезпечними предметами та безпілотними системами.
+        </p>
+    </div>
+</section>
+
+<section class="page">
+
+    <h2 class="section-title">1. Загальні правила</h2>
+
+    <div class="info-block">
+        <h3>Основні принципи</h3>
+        <ul>
+            <li>Завжди вважай зброю зарядженою.</li>
+            <li>Не направляй ствол у те, куди не збираєшся стріляти.</li>
+            <li>Палець поза спуском до моменту відкриття вогню.</li>
+            <li>Перевіряй напрямок та фон позаду цілі.</li>
+        </ul>
+    </div>
+
+    <h2 class="section-title">2. Боєприпаси</h2>
+
+    <div class="info-block">
+        <h3>Що заборонено</h3>
+        <ul>
+            <li>Кидати боєприпаси або працювати з ними після падіння.</li>
+            <li>Підігрівати, сушити або відкривати корпус.</li>
+            <li>Підходити до боєприпасу, що не спрацював (мінімум 30 хв).</li>
+        </ul>
+    </div>
+
+    <div class="info-block">
+        <h3>Правильна робота</h3>
+        <ul>
+            <li>Зберігати в сухому, прохолодному приміщенні.</li>
+            <li>Регулярна перевірка маркування, цілісності корпусу.</li>
+            <li>Транспортування тільки у заводській тарі.</li>
+        </ul>
+    </div>
+
+    <h2 class="section-title">3. ППО</h2>
+
+    <div class="info-block">
+        <h3>Безпека на позиції</h3>
+        <ul>
+            <li>Зона пуску очищена на 360°.</li>
+            <li>Відсутність перешкод у секторі наведення.</li>
+            <li>Перевірка вузлів перед кожним запуском.</li>
+        </ul>
+    </div>
+
+    <h2 class="section-title">4. FPV та БпЛА</h2>
+
+    <div class="info-block">
+        <h3>Правила роботи</h3>
+        <ul>
+            <li>Пуск лише з укриття або за природних бар'єрів.</li>
+            <li>Ніколи не запускати БпЛА ближче ніж 50 м до людей.</li>
+            <li>Перевірка АКБ, прошивки, пропелерів.</li>
+        </ul>
+    </div>
+
+</section>
+
+<footer>
+    © 2025 • Правила безпеки
+</footer>
+
+<script>
+const burger=document.getElementById("hudBurger");
+const menu=document.getElementById("hudMenu");
+burger.addEventListener("click",()=>{burger.classList.toggle("active");menu.classList.toggle("visible");});
+menu.querySelectorAll("button[data-link]").forEach(btn=>btn.addEventListener("click",()=>window.location.href=btn.dataset.link));
+</script>
+
+</body>
+</html>

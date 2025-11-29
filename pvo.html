@@ -34,7 +34,7 @@
         text-decoration: none;
     }
 
-    /* ===== ГЛОБАЛЬНИЙ HUD (універсальний для всіх сторінок) ===== */
+   /* ===== ГЛОБАЛЬНИЙ HUD (універсальний для всіх сторінок) ===== */
 .hud-nav {
     position: fixed;
     top: 0;
@@ -53,8 +53,9 @@
 
 .hud-logo {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: center;
+    gap: 14px; /* як в ammo/rockets */
+    cursor: pointer;
 }
 .hud-logo-main {
     font-size: 15px;
@@ -67,42 +68,85 @@
     color: #b8b8b8;
 }
 
+/* Бек-кнопка */
+.hud-back {
+    font-size: 18px;
+    color: var(--accent-soft);
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,39,39,0.5);
+    background: rgba(20,0,0,0.6);
+    box-shadow: 0 0 6px rgba(255,39,39,0.4);
+    transition: 0.2s;
+}
+
+.hud-back:hover {
+    background: rgba(40,0,0,0.9);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255,39,39,1);
+}
+
+/* НОВИЙ БУРГЕР — квадратний стиль як у ammo/rockets */
 .hud-burger {
-    width: 32px;
-    height: 32px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,39,39,0.6);
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,39,39,0.5);
+    background: rgba(20,0,0,0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: none;
+    transition: 0.2s ease;
     position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(255,39,39,0.7);
 }
-.hud-burger span {
-    position: relative;
-    width: 18px;
-    height: 2px;
-    background: #ff2727;
-    border-radius: 999px;
-    transition: 0.25s;
-}
+
+/* Лінії бургер-меню */
+.hud-burger span,
 .hud-burger::before,
 .hud-burger::after {
     content: "";
-    position: absolute;
     width: 18px;
     height: 2px;
-    background: #ff2727;
+    background: var(--accent-soft);
     border-radius: 999px;
+    position: absolute;
     transition: 0.25s;
 }
-.hud-burger::before { transform: translateY(-6px); }
-.hud-burger::after { transform: translateY(6px); }
-.hud-burger.active span { opacity: 0; }
-.hud-burger.active::before { transform: rotate(45deg); }
-.hud-burger.active::after { transform: rotate(-45deg); }
+
+.hud-burger::before {
+    transform: translateY(-6px);
+}
+.hud-burger::after {
+    transform: translateY(6px);
+}
+
+/* Анімація перетворення на Х */
+.hud-burger.active span {
+    opacity: 0;
+}
+.hud-burger.active::before {
+    transform: rotate(45deg);
+}
+.hud-burger.active::after {
+    transform: rotate(-45deg);
+}
+
+/* Ефект наведення */
+.hud-burger:hover {
+    background: rgba(40,0,0,0.85);
+    border-color: #ff2727;
+    box-shadow: 0 0 12px rgba(255,40,40,0.8);
+}
+
+/* Ефект натискання */
+.hud-burger:active {
+    transform: scale(0.90);
+    box-shadow: 0 0 18px rgba(255,0,0,1);
+}
+
 
 /* MENU */
 .hud-menu {
@@ -221,7 +265,7 @@
         width: 100%;
         max-width: 420px;
         position: relative;
-        z-index: 50;
+        zіз-index: 50;
     }
 
     .search-box input {
@@ -278,7 +322,7 @@
         cursor: pointer;
         color: var(--text-main);
         font-size: 14px;
-        border-bottom: 1px solid rgba(255,39,39,0.2);
+        border-bottom: 1px солid rgba(255,39,39,0.2);
         transition: 0.2s;
     }
 
@@ -614,10 +658,14 @@
 
 <!-- HUD НАВІГАЦІЯ -->
 <div class="hud-nav">
-    <div class="hud-logo" id="homeLink">
+<div class="hud-logo" id="homeLink">
+    <span class="hud-back" id="backBtn">←</span>
+    <div>
         <div class="hud-logo-main">Засоби ураження</div>
         <div class="hud-logo-sub">Протиповітряна оборона</div>
     </div>
+</div>
+
 
     <div class="hud-burger" id="hudBurger">
         <span></span>
@@ -731,7 +779,7 @@
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXЗsXw1Kppi_P8Y",
+      apiKey: "AIzaSyDRSzMxpXUox4_pW4ruMXZsXw1Kppi_P8Y",
       authDomain: "rooot-71962.firebaseapp.com",
       projectId: "rooot-71962",
       storageBucket: "rooot-71962.firebasestorage.app",
@@ -885,13 +933,17 @@
 
     // Старт
     loadWeapons();
-    /* ========= ПОВЕРНЕННЯ НА ГОЛОВНУ ========= */
-const home = document.getElementById("homeLink");
 
-home.addEventListener("click", () => {
-    window.location.href = "index.html";
-});
+    /* ========= ПОВЕРНЕННЯ НАЗАД ========= */
+    const backBtn = document.getElementById("backBtn");
 
+    backBtn.addEventListener("click", () => {
+        if (document.referrer && document.referrer !== location.href) {
+            history.back();
+        } else {
+            window.location.href = "index.html";
+        }
+    });
 </script>
 
 </body>

@@ -183,83 +183,81 @@
         box-shadow: 0 0 18px rgba(255,39,39,0.8);
     }
 
-   /* ===== HERO ===== */
+    /* ===== HERO ===== */
 .hero {
-    margin-top: 28px; /* або твій варіант */
+    margin-top: 20px;
     position: relative;
-    padding: 70px 18px 60px;
+    padding: 60px 18px 55px;
     overflow: hidden;
-    animation: heroFade 1.2s ease-out forwards;
-    opacity: 0;
 }
 
-.hero-parallax {
-    position: absolute;
-    inset: -40px;
-    background:
-        radial-gradient(circle at 20% 0%, rgba(255, 39, 39, 0.22), transparent 55%),
-        radial-gradient(circle at 90% 100%, rgba(255, 120, 80, 0.16), transparent 60%),
-        radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.08), transparent 70%);
-    mix-blend-mode: screen;
-    pointer-events: none;
-    transform-style: preserve-3d;
-    transition: transform 0.08s linear;
-}
 
-.hero-inner {
-    position: relative;
-    z-index: 2;
-    text-align: left;
-    max-width: 760px;
-    margin: 0 auto;
-}
+    .hero-parallax {
+        position: absolute;
+        inset: -40px;
+        background:
+            radial-gradient(circle at 20% 0%, rgba(255, 39, 39, 0.22), transparent 55%),
+            radial-gradient(circle at 90% 100%, rgba(255, 120, 80, 0.16), transparent 60%),
+            radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.08), transparent 70%);
+        mix-blend-mode: screen;
+        pointer-events: none;
+        transform-style: preserve-3d;
+        transition: transform 0.08s linear;
+    }
 
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--accent-soft);
-    padding: 4px 9px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,39,39,0.7);
-    background: rgba(0,0,0,0.8);
-    box-shadow: var(--border-glow);
-    margin-bottom: 14px;
-}
+    .hero-inner {
+        position: relative;
+        z-index: 2;
+        text-align: left;
+        max-width: 760px;
+        margin: 0 auto;
+    }
 
-.hero-title {
-    font-size: 26px;
-    line-height: 1.2;
-    text-transform: uppercase;
-    text-shadow: 0 0 18px rgba(255,39,39,0.9);
-    margin-bottom: 10px;
-}
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--accent-soft);
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,39,39,0.7);
+        background: rgba(0,0,0,0.8);
+        box-shadow: var(--border-glow);
+        margin-bottom: 14px;
+    }
 
-.hero-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 22px;
-}
+    .hero-title {
+        font-size: 26px;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-shadow: 0 0 18px rgba(255,39,39,0.9);
+        margin-bottom: 10px;
+    }
 
-.hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 11px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-}
+    .hero-sub {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-bottom: 22px;
+    }
 
-.hero-meta span {
-    padding: 4px 9px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,39,39,0.6);
-    background: rgba(3,3,5,0.9);
-}
+    .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
 
+    .hero-meta span {
+        padding: 4px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,39,39,0.6);
+        background: rgba(3,3,5,0.9);
+    }
 
     /* ===== СЕКЦІЇ ===== */
     section {
@@ -508,6 +506,7 @@
 
 </body>
 </html>
+
 
 
 
